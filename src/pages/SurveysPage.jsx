@@ -1,8 +1,8 @@
-
-/*
 import { useEffect, useState } from 'react';
 
-const SurveysPage = () => {
+const SURVEYS_BACKEND_URL = 'http://arkady-desktop-7oje26k:8080/api/survey';
+
+export default function SurveysPage() {
   const [surveys, setSurveys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,10 +10,11 @@ const SurveysPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await fetch('http://localhost:5000/surveys');
+        const response = await fetch(SURVEYS_BACKEND_URL);
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setSurveys(data);
+        console.log("Surveys: " + JSON.stringify(data));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,15 +33,11 @@ const SurveysPage = () => {
       <h1>Surveys List</h1>
       <ul>
         {surveys.map(survey => (
-          <li key={survey.id}>
-            <h3>{survey.name}</h3>
-            
+          <li key={survey.surveyId}>
+            <h3>{JSON.stringify(survey)}</h3>
           </li>
         ))}
       </ul>
     </div>
   );
 };
-
-export default SurveysPage;
-*/
