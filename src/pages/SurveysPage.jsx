@@ -1,3 +1,5 @@
+
+/*
 import { useEffect, useState } from 'react';
 
 const SurveysPage = () => {
@@ -41,3 +43,4 @@ const SurveysPage = () => {
 };
 
 export default SurveysPage;
+*/
