@@ -1,3 +1,44 @@
+/*
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Home'; 
+import Surveys from './Surveys';
+
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/surveys" element={<Surveys />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
+*/
+
+export default function App() {  
+  return (
+    <div>
+      <h1>Home Page</h1>
+    </div>
+  );
+}
+
+/*
+import { Link } from 'react-router-dom'
+
+function App() {
+  return (
+    <div>
+      <h1>Home Page</h1>
+      <nav>
+        <Link to="/surveys">View Surveys</Link>
+      </nav>
+    </div>
+  )
+}
+*/
+/*
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
@@ -33,3 +74,4 @@ function App() {
 }
 
 export default App
+*/

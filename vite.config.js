@@ -7,6 +7,13 @@ export default defineConfig({
 	,
   server: {
 	  host: "0.0.0.0",
-	  allowedHosts: ['raspub']
+	  allowedHosts: ['raspub'],
+	  proxy: {
+      '/api': {
+        target: 'http://your-backend-api.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
  }
 })
