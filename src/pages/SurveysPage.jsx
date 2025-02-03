@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const SURVEYS_BACKEND_URL = 'http://arkady-desktop-7oje26k:8080/api/survey';
+const SURVEYS_BACKEND_URL = window.ENV?.BACKEND_URL || 'http://localhost:8080/api/survey';
 
 export default function SurveysPage() {
   const [surveys, setSurveys] = useState([]);
@@ -10,7 +10,8 @@ export default function SurveysPage() {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await fetch(SURVEYS_BACKEND_URL);
+        console.log("Backend url: " + SURVEYS_BACKEND_URL);
+        const response = await fetch(SURVEYS_BACKEND_URL + "/api/survey");
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setSurveys(data);
