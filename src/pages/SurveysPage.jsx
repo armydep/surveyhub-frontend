@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const SURVEYS_BACKEND_URL = window.ENV?.BACKEND_URL || 'http://localhost:8080/api/survey';
+const SURVEYS_BACKEND_URL = "http://raspub:8080";//window.ENV?.BACKEND_URL || 'http://localhost:8080/api/survey';
 
 export default function SurveysPage() {
   const [surveys, setSurveys] = useState([]);
