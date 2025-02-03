@@ -1,25 +1,19 @@
 import { useState, useEffect } from "react";
-import SurveysPage from "./pages/SurveysPage";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Surveys from "./pages/Surveys";
+import CreateSurvey from "./pages/CreateSurvey";
+
 
 export default function App() {
-
-  const [count, setCount] = useState(1);
   return (
-    <div>
-      <h1>Home Page returned by App component</h1>
-      <div>
-        <button onClick={() => setCount((cc) => cc + 1)}>+
-        </button>
-      </div>
-      <div>count is {count}</div>
-      <div>
-        <button onClick={() => setCount(count - 1)}>-
-        </button>
-      </div>
-      <h1>Surveys</h1>
-      <div className="container">
-        <SurveysPage />
-      </div>
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<Surveys />} />
+          <Route exact path="/CreateSurvey" element={<CreateSurvey />} />
+          {/*<Route path="/survey/:id" element={<SurveyPage />} />*/}
+        </Routes>
+      </Router>
+    </>
   );
 }

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import CreateSurvey from "./CreateSurvey";
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
-export default function SurveysPage() {
+export default function Surveys() {
   const [surveys, setSurveys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,12 +35,17 @@ export default function SurveysPage() {
     <div>
       <h1>Surveys List</h1>
       <ul>
-        {surveys.map(survey => (
-          <li key={survey.surveyId}>
-            <h3>{JSON.stringify(survey)}</h3>
-          </li>
-        ))}
+        {
+          surveys.map(survey => (
+            <li key={survey.surveyId}>
+              <Link to="CreateSurvey">{survey.name}</Link>
+            </li>
+          ))
+        }
       </ul>
+      <button onClick={() => window.location.href = '/CreateSurvey'}>
+        Create Survey
+      </button>
     </div>
   );
 };
