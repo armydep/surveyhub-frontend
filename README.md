@@ -13,3 +13,9 @@ npm install react-router-dom
 
 mock backend json:
  npm install -g json-server
+
+build:
+npm run build
+
+run:
+npm run dev
