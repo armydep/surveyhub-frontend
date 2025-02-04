@@ -1,45 +1,51 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
 
 export default function CreateNewSurvey() {
     const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
     const [responseData, setResponseData] = useState(null); // State to store the API response
     const [error, setError] = useState(null); // State to handle errors
+
+    const [textAreas, setTextAreas] = useState([]);
+    const addTextArea = () => {
+        setTextAreas([...textAreas, '']);
+    };
+
+    const handleTextAreaChange = (index, event) => {
+        const newTextAreas = [...textAreas];
+        newTextAreas[index] = event.target.value;
+        setTextAreas(newTextAreas);
+    };
+
+    const buildSurveyData = (name, qTexts) => {
+        return {
+            name: name,
+            userId: 10024,
+            questions: qTexts.map(question => JSON.parse(question))
+        }
+    };
+    //questions: qTexts.map(question => ({ qtext: question }))
+
+    const isFormValid = () => {
+        return textAreas.length > 0 && textAreas.some((value) => value.trim() !== '');
+    };
+
+    const removeTextArea = (index) => {
+        const newTextAreas = textAreas.filter((_, i) => i !== index);
+        setTextAreas(newTextAreas);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-
-            const bodyStr = JSON.stringify(
-                {
-                    "name": "my fe survey",
-                    "userId": 10023,
-                    "questions": [
-                        {
-                            "question": "Have you been in London",
-                            "type": "BOOLEAN",
-                            "required": true
-                        },
-                        {
-                            "question": "how many hobbies do you have",
-                            "type": "INTEGER",
-                            "min": 0,
-                            "max": 30,
-                            "required": true
-                        },
-                        {
-                            "question": "Tell my a story pls",
-                            "type": "TEXT",
-                            "min": 0,
-                            "max": 100,
-                            "required": true
-                        }
-                    ]
-                }
-            );
+            if (!isFormValid()) {
+                console.error('Invalid form');
+                setError('Invalid form');
+                return;
+            }
+            const bodyStr = JSON.stringify(buildSurveyData(name, textAreas));
             console.log('Request Body:', bodyStr);
 
             const response = await fetch(SURVEYS_BACKEND_URL + '/api/survey', {
@@ -51,6 +57,7 @@ export default function CreateNewSurvey() {
             });
             if (!response.ok) {
                 console.error('Failed to create survey');
+                setError('Failed to create survey');
                 return;
             }
             const data = await response.text();
@@ -78,14 +85,28 @@ export default function CreateNewSurvey() {
                     />
                 </div>
                 <div>
-                    <label>Description:</label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        required
-                    />
+                    <button onClick={addTextArea}>Add Text Area</button>
+                    {
+                        textAreas.map((value, index) => (
+                            <div key={index} style={{marginTop: '10px'}}>
+                            <textarea
+                                value={value}
+                                onChange={(event) => handleTextAreaChange(index, event)}
+                                placeholder="Type something..."
+                                required
+                            />
+                                <button
+                                    type="button"
+                                    onClick={() => removeTextArea(index)}
+                                    style={{marginLeft: '10px'}}>
+                                    Remove
+                                </button>
+                            </div>
+                        ))
+                    }
                 </div>
-                <button type="submit">Create Survey</button>
+
+                <button type="submit" disabled={!isFormValid()}>Create Survey</button>
             </form>
 
             {/* Display the API response */}

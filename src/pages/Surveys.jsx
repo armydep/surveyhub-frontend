@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-//import CreateSurvey from "./CreateSurvey";
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
