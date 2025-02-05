@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Surveys from "./pages/Surveys";
 import CreateSurvey from "./pages/CreateSurvey";
+import ShowSurvey from "./pages/ShowSurvey";
 
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
         <Routes>
           <Route exact path="/" element={<Surveys />} />
           <Route exact path="/CreateSurvey" element={<CreateSurvey />} />
-          {/*<Route path="/survey/:id" element={<SurveyPage />} />*/}
+          <Route exact path="/ShowSurvey/:surveyId" element={<ShowSurvey />} />
         </Routes>
       </Router>
     </>
