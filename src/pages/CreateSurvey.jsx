@@ -85,7 +85,7 @@ export default function CreateNewSurvey() {
                     />
                 </div>
                 <div>
-                    <button onClick={addTextArea}>Add Text Area</button>
+                    <button onClick={addTextArea}>Add Question</button>
                     {
                         textAreas.map((value, index) => (
                             <div key={index} style={{marginTop: '10px'}}>
