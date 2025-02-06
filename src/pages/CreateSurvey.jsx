@@ -2,39 +2,166 @@ import {useState} from 'react';
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
-
 export default function CreateNewSurvey() {
+    const [responseData, setResponseData] = useState(null);
+    const [error, setError] = useState(null);
+
     const [name, setName] = useState('');
-    const [responseData, setResponseData] = useState(null); // State to store the API response
-    const [error, setError] = useState(null); // State to handle errors
+    const [description, setDescription] = useState('');
+    const [questions, setQuestions] = useState([]);
 
-    const [textAreas, setTextAreas] = useState([]);
-    const addTextArea = () => {
-        setTextAreas([...textAreas, '']);
+    const addTextQuestion = () => {
+        console.debug("Button add text question!. questions size. ", questions.length);
+        setQuestions(prevQuestions => [...prevQuestions, {type: "TEXT", qTxt: "", max: 1, min: 1}]);
+    };
+    const addBoolQuestion = () => {
+        console.debug("Button add bool question!");
+        setQuestions(prevQuestions => [...prevQuestions, {type: "boolean", qTxt: ""}]);
+    };
+    const addIntegerQuestion = () => {
+        console.debug("Button add int question!");
+        setQuestions(prevQuestions => [...prevQuestions, {type: "integer", qTxt: "", min: 0, max: 0}]);
+    };
+    const addOptionListQuestion = () => {
+        console.debug("Button add optlist question!");
+        setQuestions(prevQuestions => [...prevQuestions, {type: "optionList", qTxt: "", min: 0, max: 0}]);
     };
 
-    const handleTextAreaChange = (index, event) => {
-        const newTextAreas = [...textAreas];
-        newTextAreas[index] = event.target.value;
-        setTextAreas(newTextAreas);
+    const handleTextQuestionChange = (index, event) => {
+        const allQuestions = [...questions];
+        allQuestions[index].qTxt = event.target.value;
+        setQuestions(allQuestions);
     };
 
-    const buildSurveyData = (name, qTexts) => {
-        return {
-            name: name,
-            userId: 10024,
-            questions: qTexts.map(question => JSON.parse(question))
-        }
+    const handleBooleanQuestionChange = (index, event) => {
+        const allQuestions = [...questions];
+        allQuestions[index].qTxt = event.target.value;
+        setQuestions(allQuestions);
     };
-    //questions: qTexts.map(question => ({ qtext: question }))
+    const handleIntegerQuestionChange = (index, event) => {
+        const allQuestions = [...questions];
+        allQuestions[index].qTxt = event.target.value;
+        setQuestions(allQuestions);
+    };
+    const handleOptionListQuestionChange = (index, event) => {
+        const allQuestions = [...questions];
+        allQuestions[index].qTxt = event.target.value;
+        setQuestions(allQuestions);
+    };
+
+    const handleTextMinSizeChange = (index, event) => {
+        console.debug("Text Min size change. index: " + index);
+        const allQuestions = [...questions];
+        allQuestions[index].min = parseInt(event.target.value, 10);
+        setQuestions(allQuestions);
+    };
+
+    const handleTextMaxSizeChange = (index, event) => {
+        console.debug("Text Max size change. index: " + index);
+        const allQuestions = [...questions];
+        allQuestions[index].max = parseInt(event.target.value, 10);
+        setQuestions(allQuestions);
+    };
+
+    function TextQuestionComponent(index, q) {
+        console.debug(`Text component added. index: ${index}. value: ${q}`);
+        return (
+            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
+                            <textarea value={q.value}
+                                      placeholder="Type a question (txt)"
+                                      onChange={(event) => handleTextQuestionChange(index, event)}/>
+                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div>
+                        <label htmlFor="quantity">Min size:</label>
+                        <input onChange={(event) => handleTextMinSizeChange(index, event)}
+                               type="number" name="quantity" min="1"
+                               max="100" step="1"/>
+                    </div>
+                    <div>
+                        <label htmlFor="quantity">Max:</label>
+                        <input onChange={(event) => handleTextMaxSizeChange(index, event)}
+                               type="number" name="quantity" min="1" max="1000" step="1"/>
+                    </div>
+                </div>
+                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                    Remove (txt)
+                </button>
+            </div>
+        );
+    }
+
+    function BooleanQuestionComponent(ind, q) {
+        return (
+            <div key={ind} style={{marginTop: '10px'}}>
+                            <textarea value={q.value} placeholder="Type a question (bool)"
+                                      onChange={(event) => handleBooleanQuestionChange(ind, event)}/>
+                <button type="button" onClick={() => removeQuestion(ind)} style={{marginLeft: '10px'}}>
+                    Remove (bool)
+                </button>
+            </div>
+        );
+    }
+
+    function IntegerQuestionComponent(index, value) {
+        return (
+            <div key={index} style={{marginTop: '10px'}}>
+                            <textarea value={value.value} placeholder="Type a question (int)"
+                                      onChange={(event) => handleIntegerQuestionChange(index, event)}/>
+                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div>
+                        <label htmlFor="quantity">Min:</label>
+                        <input type="number" id="quantity" name="quantity" step="1" value="0"/>
+                    </div>
+                    <div>
+                        <label htmlFor="quantity">Max:</label>
+                        <input type="number" id="quantity" name="quantity" step="1" value="1"/>
+                    </div>
+                </div>
+                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                    Remove (int)
+                </button>
+            </div>
+        );
+    }
+
+    function OptionListQuestionComponent(index, value) {
+        return (
+            <div key={index} style={{marginTop: '10px'}}>
+                            <textarea value={value.value} placeholder="Type a question (optlist)"
+                                      onChange={(event) => handleOptionListQuestionChange(index, event)}/>
+                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                    Remove (optlist)
+                </button>
+            </div>
+        );
+    }
+
+    const questionComponents = {
+        boolean: BooleanQuestionComponent,
+        integer: IntegerQuestionComponent,
+        optionList: OptionListQuestionComponent,
+        TEXT: TextQuestionComponent
+    };
 
     const isFormValid = () => {
-        return textAreas.length > 0 && textAreas.some((value) => value.trim() !== '');
+        return true;// || questions.length > 0 && questions.some((value) => value.qTxt.trim() !== '');
+    };
+    const removeQuestion = (index) => {
+        console.debug("Removing question ", index);
+        const cQuestions = questions.filter((_, i) => i !== index);
+        setQuestions(cQuestions);
     };
 
-    const removeTextArea = (index) => {
-        const newTextAreas = textAreas.filter((_, i) => i !== index);
-        setTextAreas(newTextAreas);
+    const buildSurveyData = (name, description, qTexts) => {
+        return {
+            name: name,
+            description: description,
+            userId: 10024,
+            questions: qTexts.map(item => {
+                const {qTxt, ...rest} = item;
+                return {...rest, question: qTxt};
+            })
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -45,7 +172,7 @@ export default function CreateNewSurvey() {
                 setError('Invalid form');
                 return;
             }
-            const bodyStr = JSON.stringify(buildSurveyData(name, textAreas));
+            const bodyStr = JSON.stringify(buildSurveyData(name, description, questions));
             console.log('Request Body:', bodyStr);
 
             const response = await fetch(SURVEYS_BACKEND_URL + '/api/survey', {
@@ -74,42 +201,45 @@ export default function CreateNewSurvey() {
     return (
         <div>
             <h1>Create New Survey3</h1>
-            <form onSubmit={handleSubmit}>
+            <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                 <div>
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
+                    <button onClick={addTextQuestion}>Add Text Question</button>
                 </div>
                 <div>
-                    <button onClick={addTextArea}>Add Question</button>
-                    {
-                        textAreas.map((value, index) => (
-                            <div key={index} style={{marginTop: '10px'}}>
-                            <textarea
-                                value={value}
-                                onChange={(event) => handleTextAreaChange(index, event)}
-                                placeholder="Type something..."
-                                required
-                            />
-                                <button
-                                    type="button"
-                                    onClick={() => removeTextArea(index)}
-                                    style={{marginLeft: '10px'}}>
-                                    Remove
-                                </button>
-                            </div>
-                        ))
-                    }
+                    <button onClick={addBoolQuestion}>Add Bool Question</button>
                 </div>
+                <div>
+                    <button onClick={addIntegerQuestion}>Add Integer Question</button>
+                </div>
+                <div>
+                    <button onClick={addOptionListQuestion}>Add OptionList Question</button>
+                </div>
+            </div>
 
-                <button type="submit" disabled={!isFormValid()}>Create Survey</button>
+            <form onSubmit={handleSubmit}>
+                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div>
+                        <label>Name:</label>
+                        <input type="text" value={name}
+                               onChange={(e) => setName(e.target.value)}/>
+                    </div>
+                    <div>
+                        <label>Description:</label>
+                        <input type="text" value={description}
+                               onChange={(e) => setDescription(e.target.value)}/>
+                    </div>
+                </div>
+                {
+                    questions.map((q, index) => {
+                        console.debug("Iter Question type: " + q.type + ". index: " + index);
+                        const Component = questionComponents[q.type];
+                        return Component(index, q);
+                    })
+                }
+                <button type="submit">Submit Survey</button>
+                {/*disabled={!isFormValid()}*/}
             </form>
 
-            {/* Display the API response */}
             {responseData && (
                 <div>
                     <h2>Survey Created Successfully!</h2>
@@ -117,7 +247,6 @@ export default function CreateNewSurvey() {
                 </div>
             )}
 
-            {/* Display errors if any */}
             {error && (
                 <div style={{color: 'red'}}>
                     <h2>Error:</h2>
