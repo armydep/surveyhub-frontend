@@ -224,7 +224,7 @@ export default function CreateNewSurvey() {
                         return !isNonEmptyInteger(value.min) ||
                             !isNonEmptyInteger(value.max) ||
                             value.min > value.max ||
-                            (value.min === value.max) && (value.min === 0) ||
+                            (value.min === value.max) ||
                             value.min < 0;
                     }
                     case QUESTION_TYPES.BOOLEAN: {
