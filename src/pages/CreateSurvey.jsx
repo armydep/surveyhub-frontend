@@ -224,7 +224,7 @@ export default function CreateNewSurvey() {
                         return !isNonEmptyInteger(value.min) ||
                             !isNonEmptyInteger(value.max) ||
                             value.min > value.max ||
-                            (value.min === value.max) ||
+                            //(value.min === value.max) ||
                             value.min < 0;
                     }
                     case QUESTION_TYPES.BOOLEAN: {
@@ -305,7 +305,7 @@ export default function CreateNewSurvey() {
 
     return (
         <div>
-            <h1>Create New Survey3</h1>
+            <h1>Create New Survey</h1>
             <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                 <div>
                     <button type="button" onClick={addTextQuestion}>Add Text Question</button>

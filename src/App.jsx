@@ -10,8 +10,8 @@ export default function App() {
       <Router>
         <Routes>
           <Route exact path="/" element={<Surveys />} />
-          <Route exact path="/CreateSurvey" element={<CreateSurvey />} />
-          <Route exact path="/ShowSurvey/:surveyId" element={<ShowSurvey />} />
+          <Route exact path="/new" element={<CreateSurvey />} />
+          <Route exact path="/survey/:surveyId" element={<ShowSurvey />} />
         </Routes>
       </Router>
     </>
