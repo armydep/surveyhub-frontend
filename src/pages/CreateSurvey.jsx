@@ -261,9 +261,10 @@ export default function CreateNewSurvey() {
             name: name,
             description: description,
             userId: 10024,
+            timestamp: Date.now(),
             questions: qTexts.map(item => {
                 const {qTxt, ...rest} = item;
-                return {...rest, question: qTxt};
+                return {...rest, question: qTxt, required: true};
             })
         }
     };
