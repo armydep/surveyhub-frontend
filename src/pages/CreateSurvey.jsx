@@ -173,7 +173,7 @@ export default function CreateNewSurvey() {
                                       onChange={(event) => handleOptionListQuestionChange(index, event)}/>
                 <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
                     <label>Options</label>
-                    <button onClick={() => addOptionItem(index)}>Add Option item</button>
+                    <button type="button" onClick={() => addOptionItem(index)}>Add Option item</button>
                     <div>
                         {
                             questions[index].options.map((optitem, ind) => {
@@ -184,7 +184,7 @@ export default function CreateNewSurvey() {
                                         <input
                                             value={optitem}
                                             onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
-                                        <button onClick={() => removeOptionItem(index, ind)}
+                                        <button type="button" onClick={() => removeOptionItem(index, ind)}
                                                 style={{margin: '10px'}}>Remove option
                                         </button>
                                     </div>
@@ -201,8 +201,48 @@ export default function CreateNewSurvey() {
         );
     }
 
+    function isNonEmptyInteger(nc) {
+        if (typeof nc !== "number" || isNaN(nc)) {
+            return false;
+        }
+        return Number.isInteger(nc);
+    }
+
+    function hasDuplicates(arr) {
+        return !arr.every((item, index) => arr.indexOf(item) === index);
+    }
+
     const isFormValid = () => {
-        return true;// || questions.length > 0 && questions.some((value) => value.qTxt.trim() !== '');
+        return name.length > 0 &&
+            questions.length > 0 &&
+            !questions.some((value) => {
+                if (value.qTxt.trim() === '') {
+                    return true;
+                }
+                switch (value.type) {
+                    case QUESTION_TYPES.TEXT: {
+                        return !isNonEmptyInteger(value.min) ||
+                            !isNonEmptyInteger(value.max) ||
+                            value.min > value.max ||
+                            (value.min === value.max) && (value.min === 0) ||
+                            value.min < 0;
+                    }
+                    case QUESTION_TYPES.BOOLEAN: {
+                        return false;
+                    }
+                    case QUESTION_TYPES.INTEGER: {
+                        return !isNonEmptyInteger(value.min) ||
+                            !isNonEmptyInteger(value.max) ||
+                            value.min > value.max ||
+                            (value.min === value.max);
+                    }
+                    case QUESTION_TYPES.OPTION_LIST: {
+                        return value.options.length < 2 ||
+                            value.options.some((opt) => opt.trim() === '') ||
+                            hasDuplicates(value.options);
+                    }
+                }
+            });
     };
     const removeQuestion = (index) => {
         console.debug("Removing question ", index);
@@ -267,16 +307,16 @@ export default function CreateNewSurvey() {
             <h1>Create New Survey3</h1>
             <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                 <div>
-                    <button onClick={addTextQuestion}>Add Text Question</button>
+                    <button type="button" onClick={addTextQuestion}>Add Text Question</button>
                 </div>
                 <div>
-                    <button onClick={addBoolQuestion}>Add Bool Question</button>
+                    <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
                 </div>
                 <div>
-                    <button onClick={addIntegerQuestion}>Add Integer Question</button>
+                    <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
                 </div>
                 <div>
-                    <button onClick={addOptionListQuestion}>Add OptionList Question</button>
+                    <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
                 </div>
             </div>
 
@@ -300,8 +340,8 @@ export default function CreateNewSurvey() {
                         return Component(index, q);
                     })
                 }
-                <button type="submit">Submit Survey</button>
-                {/*disabled={!isFormValid()}*/}
+                <button type="submit" disabled={!isFormValid()}>Submit Survey</button>
+
             </form>
 
             {responseData && (
