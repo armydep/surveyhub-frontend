@@ -2,29 +2,50 @@ import {useState} from 'react';
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
+
 export default function CreateNewSurvey() {
     const [responseData, setResponseData] = useState(null);
     const [error, setError] = useState(null);
+
+    const QUESTION_TYPES = Object.freeze({
+        TEXT: "TEXT",
+        BOOLEAN: "BOOLEAN",
+        INTEGER: "INTEGER",
+        OPTION_LIST: "OPTION_LIST"
+    });
+
+    const questionComponents = {
+        [QUESTION_TYPES.BOOLEAN]: BooleanQuestionComponent,
+        [QUESTION_TYPES.INTEGER]: IntegerQuestionComponent,
+        [QUESTION_TYPES.OPTION_LIST]: OptionListQuestionComponent,
+        [QUESTION_TYPES.TEXT]: TextQuestionComponent
+    };
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
 
     const addTextQuestion = () => {
-        console.debug("Button add text question!. questions size. ", questions.length);
-        setQuestions(prevQuestions => [...prevQuestions, {type: "TEXT", qTxt: "", max: 1, min: 1}]);
+        console.debug("Button add text question. questions size. ", questions.length);
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.TEXT, qTxt: "", max: 1, min: 1}]);
     };
     const addBoolQuestion = () => {
-        console.debug("Button add bool question!");
-        setQuestions(prevQuestions => [...prevQuestions, {type: "boolean", qTxt: ""}]);
+        console.debug("Button add bool question");
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.BOOLEAN, qTxt: ""}]);
     };
     const addIntegerQuestion = () => {
-        console.debug("Button add int question!");
-        setQuestions(prevQuestions => [...prevQuestions, {type: "integer", qTxt: "", min: 0, max: 0}]);
+        console.debug("Button add int question");
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.INTEGER, qTxt: "", min: 0, max: 0}]);
     };
     const addOptionListQuestion = () => {
-        console.debug("Button add optlist question!");
-        setQuestions(prevQuestions => [...prevQuestions, {type: "optionList", qTxt: "", min: 0, max: 0}]);
+        console.debug("Button add optlist question");
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.OPTION_LIST, qTxt: "", options: []}]);
+    };
+    const addOptionItem = (index) => {
+        console.debug("Button add option item, index: ", index);
+        const allQuestions = [...questions];
+        allQuestions[index].options = [...allQuestions[index].options, ''];
+        setQuestions(allQuestions);
     };
 
     const handleTextQuestionChange = (index, event) => {
@@ -63,6 +84,27 @@ export default function CreateNewSurvey() {
         setQuestions(allQuestions);
     };
 
+    const handleIntegerMinSizeChange = (index, event) => {
+        console.debug("Int Min size change. index: " + index);
+        const allQuestions = [...questions];
+        allQuestions[index].min = parseInt(event.target.value, 10);
+        setQuestions(allQuestions);
+    };
+
+    const handleIntegerMaxSizeChange = (index, event) => {
+        console.debug("Int Max size change. index: " + index);
+        const allQuestions = [...questions];
+        allQuestions[index].max = parseInt(event.target.value, 10);
+        setQuestions(allQuestions);
+    };
+
+    const handleOptionItemTextChange = (qindex, itemindex, event) => {
+        console.debug(`handleOptionItemTextChange qindex: ${qindex}. itemindex: ${itemindex}. val: ${event.target.value}`);
+        const allQuestions = [...questions];
+        allQuestions[qindex].options[itemindex] = event.target.value;
+        setQuestions(allQuestions);
+    };
+
     function TextQuestionComponent(index, q) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
@@ -90,12 +132,12 @@ export default function CreateNewSurvey() {
         );
     }
 
-    function BooleanQuestionComponent(ind, q) {
+    function BooleanQuestionComponent(index, q) {
         return (
-            <div key={ind} style={{marginTop: '10px'}}>
+            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea value={q.value} placeholder="Type a question (bool)"
-                                      onChange={(event) => handleBooleanQuestionChange(ind, event)}/>
-                <button type="button" onClick={() => removeQuestion(ind)} style={{marginLeft: '10px'}}>
+                                      onChange={(event) => handleBooleanQuestionChange(index, event)}/>
+                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
                     Remove (bool)
                 </button>
             </div>
@@ -104,17 +146,17 @@ export default function CreateNewSurvey() {
 
     function IntegerQuestionComponent(index, value) {
         return (
-            <div key={index} style={{marginTop: '10px'}}>
+            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea value={value.value} placeholder="Type a question (int)"
                                       onChange={(event) => handleIntegerQuestionChange(index, event)}/>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
                         <label htmlFor="quantity">Min:</label>
-                        <input type="number" id="quantity" name="quantity" step="1" value="0"/>
+                        <input onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
                     </div>
                     <div>
                         <label htmlFor="quantity">Max:</label>
-                        <input type="number" id="quantity" name="quantity" step="1" value="1"/>
+                        <input onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
                     </div>
                 </div>
                 <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
@@ -126,22 +168,38 @@ export default function CreateNewSurvey() {
 
     function OptionListQuestionComponent(index, value) {
         return (
-            <div key={index} style={{marginTop: '10px'}}>
+            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea value={value.value} placeholder="Type a question (optlist)"
                                       onChange={(event) => handleOptionListQuestionChange(index, event)}/>
+                <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
+                    <label>Options</label>
+                    <button onClick={() => addOptionItem(index)}>Add Option item</button>
+                    <div>
+                        {
+                            questions[index].options.map((optitem, ind) => {
+                                console.debug("Option item: " + optitem + ". index: " + ind);
+                                return (
+                                    <div key={ind} style={{margin: '20px'}}>
+                                        <label>{ind}:</label>
+                                        <input
+                                            value={optitem}
+                                            onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
+                                        <button onClick={() => removeOptionItem(index, ind)}
+                                                style={{margin: '10px'}}>Remove option
+                                        </button>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+
+                </div>
                 <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
                     Remove (optlist)
                 </button>
             </div>
         );
     }
-
-    const questionComponents = {
-        boolean: BooleanQuestionComponent,
-        integer: IntegerQuestionComponent,
-        optionList: OptionListQuestionComponent,
-        TEXT: TextQuestionComponent
-    };
 
     const isFormValid = () => {
         return true;// || questions.length > 0 && questions.some((value) => value.qTxt.trim() !== '');
@@ -150,6 +208,12 @@ export default function CreateNewSurvey() {
         console.debug("Removing question ", index);
         const cQuestions = questions.filter((_, i) => i !== index);
         setQuestions(cQuestions);
+    };
+    const removeOptionItem = (qindex, itemindex) => {
+        console.debug(`Removing option item. qindex: ${qindex}. item: ${itemindex}`);
+        const updQuestions = [...questions];
+        updQuestions[qindex].options = updQuestions[qindex].options.filter((_, i) => i !== itemindex);
+        setQuestions(updQuestions);
     };
 
     const buildSurveyData = (name, description, qTexts) => {
