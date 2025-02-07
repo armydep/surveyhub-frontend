@@ -10,6 +10,10 @@ export default function CreateNewSurvey() {
     const show = !surv;
     console.log("Create survey testp1: " + testp1 + ". surv: " + JSON.stringify(surv));
 
+    const [name, setName] = useState(surv ? surv.name : '');
+    const [description, setDescription] = useState(surv ? surv.description : '');
+    const [questions, setQuestions] = useState(surv ? surv.questions : []);
+
     const [responseData, setResponseData] = useState(null);
     const [error, setError] = useState(null);
 
@@ -27,25 +31,25 @@ export default function CreateNewSurvey() {
         [QUESTION_TYPES.TEXT]: TextQuestionComponent
     };
 
-    const [name, setName] = useState(surv ? surv.name : '');
-    const [description, setDescription] = useState(surv ? surv.description : '');
-    const [questions, setQuestions] = useState(surv ? surv.questions : []);
-
     const addTextQuestion = () => {
         console.debug("Button add text question. questions size. ", questions.length);
-        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.TEXT, qTxt: "", max: 1, min: 1}]);
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.TEXT, question: "", max: 1, min: 1}]);
     };
     const addBoolQuestion = () => {
         console.debug("Button add bool question");
-        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.BOOLEAN, qTxt: ""}]);
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.BOOLEAN, question: ""}]);
     };
     const addIntegerQuestion = () => {
         console.debug("Button add int question");
-        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.INTEGER, qTxt: "", min: 0, max: 0}]);
+        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.INTEGER, question: "", min: 0, max: 0}]);
     };
     const addOptionListQuestion = () => {
         console.debug("Button add optlist question");
-        setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.OPTION_LIST, qTxt: "", options: []}]);
+        setQuestions(prevQuestions => [...prevQuestions, {
+            type: QUESTION_TYPES.OPTION_LIST,
+            question: "",
+            options: []
+        }]);
     };
     const addOptionItem = (index) => {
         console.debug("Button add option item, index: ", index);
@@ -55,24 +59,36 @@ export default function CreateNewSurvey() {
     };
 
     const handleTextQuestionChange = (index, event) => {
+        // if (surv) {
+        //     return;
+        // }
         const allQuestions = [...questions];
-        allQuestions[index].qTxt = event.target.value;
+        allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
 
     const handleBooleanQuestionChange = (index, event) => {
+        // if (surv) {
+        //     return;
+        // }
         const allQuestions = [...questions];
-        allQuestions[index].qTxt = event.target.value;
+        allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
     const handleIntegerQuestionChange = (index, event) => {
+        // if (surv) {
+        //     return;
+        // }
         const allQuestions = [...questions];
-        allQuestions[index].qTxt = event.target.value;
+        allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
     const handleOptionListQuestionChange = (index, event) => {
+        // if (surv) {
+        //     return;
+        // }
         const allQuestions = [...questions];
-        allQuestions[index].qTxt = event.target.value;
+        allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
 
@@ -111,75 +127,99 @@ export default function CreateNewSurvey() {
         setQuestions(allQuestions);
     };
 
-    function TextQuestionComponent(index, q) {
+    function TextQuestionComponent(index, q, showCtrls) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
-                            <textarea value={q.value}
+                            <textarea value={q.question}
+                                      disabled={showCtrls}
                                       placeholder="Type a question (txt)"
                                       onChange={(event) => handleTextQuestionChange(index, event)}/>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
                         <label htmlFor="quantity">Min size:</label>
-                        <input onChange={(event) => handleTextMinSizeChange(index, event)}
-                               type="number" name="quantity" min="1"
-                               max="100" step="1"/>
+                        <input
+                            disabled={showCtrls}
+                            onChange={(event) => handleTextMinSizeChange(index, event)}
+                            type="number" name="quantity" min="1" value={q.min}
+                            max="100" step="1"/>
                     </div>
                     <div>
                         <label htmlFor="quantity">Max:</label>
-                        <input onChange={(event) => handleTextMaxSizeChange(index, event)}
-                               type="number" name="quantity" min="1" max="1000" step="1"/>
+                        <input disabled={showCtrls}
+                            onChange={(event) => handleTextMaxSizeChange(index, event)}
+                               type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
                     </div>
                 </div>
-                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                    Remove (txt)
-                </button>
+                {
+                    !showCtrls &&
+                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        Remove (txt)
+                    </button>)
+                }
             </div>
         );
     }
 
-    function BooleanQuestionComponent(index, q) {
+    function BooleanQuestionComponent(index, q, showCtrls) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
-                            <textarea value={q.value} placeholder="Type a question (bool)"
-                                      onChange={(event) => handleBooleanQuestionChange(index, event)}/>
-                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                    Remove (bool)
-                </button>
+                            <textarea disabled={showCtrls}
+                                value={q.question} placeholder="Type a question (bool)"
+                                      onChange={(event) => handleBooleanQuestionChange(index, event)}
+                            />
+                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    {
+                        !showCtrls &&
+                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                            Remove (bool)
+                        </button>)
+                    }
+                </div>
             </div>
         );
     }
 
-    function IntegerQuestionComponent(index, value) {
+    function IntegerQuestionComponent(index, value, showCtrls) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
-                            <textarea value={value.value} placeholder="Type a question (int)"
+                            <textarea value={value.question}
+                                      disabled={showCtrls}
+                                      placeholder="Type a question (int)"
                                       onChange={(event) => handleIntegerQuestionChange(index, event)}/>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
                         <label htmlFor="quantity">Min:</label>
-                        <input onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
+                        <input
+                            disabled={showCtrls}
+                            value={value.min}
+                            onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
                     </div>
                     <div>
                         <label htmlFor="quantity">Max:</label>
-                        <input onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
+                        <input disabled={showCtrls} value={value.max} onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
                     </div>
                 </div>
-                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                    Remove (int)
-                </button>
+                {
+                    !showCtrls &&
+                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        Remove (int)
+                    </button>)
+                }
             </div>
         );
     }
 
-    function OptionListQuestionComponent(index, value) {
+    function OptionListQuestionComponent(index, value, showCtrls) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
-                            <textarea value={value.value} placeholder="Type a question (optlist)"
+                            <textarea
+                                disabled={showCtrls}
+                                value={value.question} placeholder="Type a question (optlist)"
                                       onChange={(event) => handleOptionListQuestionChange(index, event)}/>
                 <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
                     <label>Options</label>
-                    <button type="button" onClick={() => addOptionItem(index)}>Add Option item</button>
+                    <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item</button>
                     <div>
                         {
                             questions[index].options.map((optitem, ind) => {
@@ -188,9 +228,10 @@ export default function CreateNewSurvey() {
                                     <div key={ind} style={{margin: '20px'}}>
                                         <label>{ind}:</label>
                                         <input
+                                            disabled={showCtrls}
                                             value={optitem}
                                             onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
-                                        <button type="button" onClick={() => removeOptionItem(index, ind)}
+                                        <button disabled={showCtrls} type="button" onClick={() => removeOptionItem(index, ind)}
                                                 style={{margin: '10px'}}>Remove option
                                         </button>
                                     </div>
@@ -200,9 +241,12 @@ export default function CreateNewSurvey() {
                     </div>
 
                 </div>
-                <button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                    Remove (optlist)
-                </button>
+                {
+                    !showCtrls &&
+                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        Remove (optlist)
+                    </button>)
+                }
             </div>
         );
     }
@@ -222,7 +266,7 @@ export default function CreateNewSurvey() {
         return name.length > 0 &&
             questions.length > 0 &&
             !questions.some((value) => {
-                if (value.qTxt.trim() === '') {
+                if (value.question.trim() === '') {
                     return true;
                 }
                 switch (value.type) {
@@ -269,8 +313,8 @@ export default function CreateNewSurvey() {
             userId: 10024,
             timestamp: Date.now(),
             questions: qTexts.map(item => {
-                const {qTxt, ...rest} = item;
-                return {...rest, question: qTxt, required: true};
+                //const {question, ...rest} = item;
+                return {...item, required: true};
             })
         }
     };
@@ -331,16 +375,28 @@ export default function CreateNewSurvey() {
                 ) :
                 (<div>not show</div>)
             }
+            {
+                surv ?
+                    (
+                        <div>
+                            <p><strong>Survey ID:</strong>{surv.surveyId}</p>
+                            <p><strong>User ID:</strong>{surv.userId}</p>
+                            <p><strong>Created:</strong>{new Date(surv.timestamp).toLocaleString()}</p>
+                        </div>
+                    ) : (<div>new surv</div>)
+            }
             <form onSubmit={handleSubmit}>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
                         <label>Name:</label>
                         <input type="text" value={name}
+                               disabled={surv}
                                onChange={(e) => setName(e.target.value)}/>
                     </div>
                     <div>
                         <label>Description:</label>
                         <input type="text" value={description}
+                               disabled={surv}
                                onChange={(e) => setDescription(e.target.value)}/>
                     </div>
                 </div>
@@ -348,7 +404,7 @@ export default function CreateNewSurvey() {
                     questions.map((q, index) => {
                         console.debug("Iter Question type: " + q.type + ". index: " + index);
                         const Component = questionComponents[q.type];
-                        return Component(index, q);
+                        return Component(index, q, surv);
                     })
                 }
                 {show ?
