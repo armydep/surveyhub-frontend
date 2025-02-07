@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 
-const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
+const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
 
 export default function Surveys() {
     const [surveys, setSurveys] = useState([]);
