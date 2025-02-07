@@ -41,7 +41,7 @@ export default function Surveys() {
                 {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
-                            <Link to={`/survey/${survey.surveyId}`} state={{testp1: "value1"}}>{survey.name}</Link>
+                            <Link to={`/new`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
                         </li>
                     ))
                 }
