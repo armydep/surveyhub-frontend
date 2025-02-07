@@ -1,9 +1,12 @@
-import {useParams} from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 import {useEffect, useState} from "react";
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
 export default function ShowSurvey() {
+    const location = useLocation();
+    const { testp1 } = location.state || {};
+    console.log("Show survey testp1: " + testp1);
     const {surveyId} = useParams();
 
     const [survey, setSurvey] = useState(null);

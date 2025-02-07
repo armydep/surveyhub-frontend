@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
@@ -7,6 +7,7 @@ export default function Surveys() {
     const [surveys, setSurveys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSurveys = async () => {
@@ -40,12 +41,13 @@ export default function Surveys() {
                 {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
-                            <Link to={`/survey/${survey.surveyId}`}>{survey.name}</Link>
+                            <Link to={`/survey/${survey.surveyId}`} state={{testp1: "value1"}}>{survey.name}</Link>
                         </li>
                     ))
                 }
             </ul>
-            <button onClick={() => window.location.href = '/new'}>
+            <button onClick={() => navigate('/new', {state: {testp1: "value1"}})}>
+                {/*<button onClick={() => window.location.href = '/new'}>*/}
                 Create Survey
             </button>
         </div>
