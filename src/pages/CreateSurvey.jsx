@@ -6,7 +6,8 @@ const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org:8080";
 
 export default function CreateNewSurvey() {
     const location = useLocation();
-    const { testp1, surv } = location.state || {};
+    const {testp1, surv} = location.state || {};
+    const show = !surv;
     console.log("Create survey testp1: " + testp1 + ". surv: " + JSON.stringify(surv));
 
     const [responseData, setResponseData] = useState(null);
@@ -26,9 +27,9 @@ export default function CreateNewSurvey() {
         [QUESTION_TYPES.TEXT]: TextQuestionComponent
     };
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [questions, setQuestions] = useState([]);
+    const [name, setName] = useState(surv ? surv.name : '');
+    const [description, setDescription] = useState(surv ? surv.description : '');
+    const [questions, setQuestions] = useState(surv ? surv.questions : []);
 
     const addTextQuestion = () => {
         console.debug("Button add text question. questions size. ", questions.length);
@@ -311,21 +312,25 @@ export default function CreateNewSurvey() {
     return (
         <div>
             <h1>Create New Survey</h1>
-            <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
-                <div>
-                    <button type="button" onClick={addTextQuestion}>Add Text Question</button>
-                </div>
-                <div>
-                    <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
-                </div>
-                <div>
-                    <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
-                </div>
-                <div>
-                    <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
-                </div>
-            </div>
-
+            {show ?
+                (
+                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                        <div>
+                            <button type="button" onClick={addTextQuestion}>Add Text Question</button>
+                        </div>
+                        <div>
+                            <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
+                        </div>
+                        <div>
+                            <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
+                        </div>
+                        <div>
+                            <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
+                        </div>
+                    </div>
+                ) :
+                (<div>not show</div>)
+            }
             <form onSubmit={handleSubmit}>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
@@ -346,8 +351,10 @@ export default function CreateNewSurvey() {
                         return Component(index, q);
                     })
                 }
-                <button type="submit" disabled={!isFormValid()}>Submit Survey</button>
-
+                {show ?
+                    (<button type="submit" disabled={!isFormValid()}>Submit Survey</button>) :
+                    (<div>not show but</div>)
+                }
             </form>
 
             {responseData && (
