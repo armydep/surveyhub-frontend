@@ -40,9 +40,10 @@ export const submitSurvey = async (survey) => {
 };
 
 export const fetchSurveyById = async (surveyId) => {
-    return surveyApiRequest(`/api/survey/${surveyId}`, {
+    console.log("Fetching survey by id: ", surveyId)
+    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey/${surveyId}`, {
         method: 'GET',
-    });
+    }, "json");
 };
 
 export const submitAnswers = async (answerForm) => {

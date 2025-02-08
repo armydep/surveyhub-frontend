@@ -47,9 +47,9 @@ export default function Home() {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
                             <Link to={`/survey/${survey.surveyId}`}
-                                  state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
+                                  state={{tmpSrvFromHome: survey}}>{survey.name}</Link>
                             <button type="button"
-                                    onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {surv: survey}})}
+                                    onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {tmpSrvFromHome: survey}})}
                                     style={{marginLeft: '10px'}}>
                                 Answer
                             </button>
@@ -61,7 +61,7 @@ export default function Home() {
                     ))
                 }
             </ul>
-            <button onClick={() => navigate('/survey', {state: {testp1: "value1"}})}>
+            <button onClick={() => navigate('/survey', {state: {}})}>
                 Create Survey
             </button>
         </div>

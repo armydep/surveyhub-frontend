@@ -1,26 +1,70 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useLocation, useParams} from "react-router-dom";
-import {submitSurvey} from "../api/api.js";
+import {fetchSurveyById, submitSurvey} from "../api/api.js";
 
 
 export default function Survey() {
     const {surveyId} = useParams();
     const location = useLocation();
     const isRedirectedFromAnswer = location.pathname.includes('/survey/answer/');
-    const {testp1, surv} = location.state || {};
-    const show = !surv;
-    const [mode, setMode] = useState(isRedirectedFromAnswer && (surveyId || surv) ? "answer" : ((surveyId || surv)? "view": "create"));
+    const {tmpSrvFromHome} = location.state || {};
+    const [mode, setMode] = useState(null);
+    const [survey, setSurvey] = useState(tmpSrvFromHome);
 
-    console.log(`Survey. Mode: ${mode}. ${surveyId}. ans: ${isRedirectedFromAnswer}. testp1: ${testp1}. surv: ${JSON.stringify(surv)}`);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [questions, setQuestions] = useState([]);
 
-    //const [name, setName] = useState(surv ? surv.name : '');
-
-    const [name, setName] = useState(surv ? surv.name : '');
-    const [description, setDescription] = useState(surv ? surv.description : '');
-    const [questions, setQuestions] = useState(surv ? surv.questions : []);
-
-    const [responseData, setResponseData] = useState(null);
+    const [submitResponse, setSubmitResponse] = useState(null);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const initializeMyprop = async () => {
+            try {
+                if (surveyId && !tmpSrvFromHome) {
+                    const result = await fetchSurveyById(surveyId);
+                    setSurvey(result);
+                    console.log('Survey fetched by id: ' + JSON.stringify(result));
+                }
+            } catch (error) {
+                console.error('Error initializing survey:', error);
+                setError('Error initializing survey: ' + error.message);
+            }
+        };
+        initializeMyprop();
+    }, [surveyId, tmpSrvFromHome]); // Depend on surveyId and tmpSrvFromHome
+
+    useEffect(() => {
+        if (survey) {
+            if (isRedirectedFromAnswer) {
+                setMode("answer");
+            } else {
+                setMode("view");
+            }
+        } else {
+            if (isRedirectedFromAnswer) {
+                setMode("error-answer");
+            } else {
+                if (surveyId) {
+                    setMode("error-view");
+                } else {
+                    setMode("create");
+                }
+            }
+        }
+    }, [survey, isRedirectedFromAnswer, surveyId]); // Add dependencies
+
+    useEffect(() => {
+        if (survey) {
+            setName(survey.name);
+            setDescription(survey.description);
+            setQuestions(survey.questions);
+        }
+    }, [survey]); // Depend on survey
+
+    useEffect(() => {
+        console.log(`Survey. Mode: ${mode}. ${surveyId}. survey: ${JSON.stringify(survey)}`);
+    }, [mode, survey, surveyId]);
 
     const QUESTION_TYPES = Object.freeze({
         TEXT: "TEXT",
@@ -64,34 +108,22 @@ export default function Survey() {
     };
 
     const handleTextQuestionChange = (index, event) => {
-        // if (surv) {
-        //     return;
-        // }
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
 
     const handleBooleanQuestionChange = (index, event) => {
-        // if (surv) {
-        //     return;
-        // }
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
     const handleIntegerQuestionChange = (index, event) => {
-        // if (surv) {
-        //     return;
-        // }
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
     const handleOptionListQuestionChange = (index, event) => {
-        // if (surv) {
-        //     return;
-        // }
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
@@ -321,7 +353,6 @@ export default function Survey() {
             userId: 10024,
             timestamp: Date.now(),
             questions: qTexts.map(item => {
-                //const {question, ...rest} = item;
                 return {...item, required: true};
             })
         }
@@ -335,15 +366,19 @@ export default function Survey() {
                 setError('Invalid form');
                 return;
             }
-            const bodyStr = JSON.stringify(buildSurveyData(name, description, questions));
+            const sbody = buildSurveyData(name, description, questions);
+            const bodyStr = JSON.stringify(sbody);
             console.log('Request Body:', bodyStr);
-            const data = await submitSurvey(bodyStr);
-            console.log("Created ok. id: " + data);
-            setResponseData(data);
+            const respData = await submitSurvey(bodyStr);
+            console.log("Created ok. id: " + respData);
+            setSubmitResponse(respData);
+            sbody.surveyId = respData;
+            setSurvey(sbody);
+            setMode("view");
             setError(null);
         } catch (err) {
             setError(err.message);
-            setResponseData(null);
+            setSubmitResponse(null);
             console.error("Fetch block error: " + err.message);
         }
     };
@@ -351,7 +386,7 @@ export default function Survey() {
     return (
         <div>
             <h1>Survey ({mode})</h1>
-            {show ?
+            {!survey ?
                 (
                     <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                         <div>
@@ -371,27 +406,27 @@ export default function Survey() {
                 (<div>not show</div>)
             }
             {
-                surv ?
+                survey ?
                     (
                         <div>
-                            <p><strong>Survey ID:</strong>{surv.surveyId}</p>
-                            <p><strong>User ID:</strong>{surv.userId}</p>
-                            <p><strong>Created:</strong>{new Date(surv.timestamp).toLocaleString()}</p>
+                            <p><strong>Survey ID:</strong>{survey.surveyId}</p>
+                            <p><strong>User ID:</strong>{survey.userId}</p>
+                            <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
                         </div>
-                    ) : (<div>new surv</div>)
+                    ) : (<div>new survey</div>)
             }
             <form onSubmit={handleSubmit}>
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                     <div>
                         <label>Name:</label>
                         <input type="text" value={name}
-                               disabled={surv}
+                               disabled={survey}
                                onChange={(e) => setName(e.target.value)}/>
                     </div>
                     <div>
                         <label>Description:</label>
                         <input type="text" value={description}
-                               disabled={surv}
+                               disabled={survey}
                                onChange={(e) => setDescription(e.target.value)}/>
                     </div>
                 </div>
@@ -399,19 +434,19 @@ export default function Survey() {
                     questions.map((q, index) => {
                         console.debug("Iter Question type: " + q.type + ". index: " + index);
                         const Component = questionComponents[q.type];
-                        return Component(index, q, surv);
+                        return Component(index, q, survey);
                     })
                 }
-                {show ?
+                {!survey ?
                     (<button type="submit" disabled={!isFormValid()}>Submit Survey</button>) :
                     (<div>not show but</div>)
                 }
             </form>
 
-            {responseData && (
+            {submitResponse && (
                 <div>
                     <h2>Survey Created Successfully!</h2>
-                    <pre>{JSON.stringify(responseData, null, 2)}</pre>
+                    <pre>{JSON.stringify(submitResponse, null, 2)}</pre>
                 </div>
             )}
 
