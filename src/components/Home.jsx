@@ -32,8 +32,6 @@ export default function Home() {
     };
 
     useEffect(() => {
-
-
         const fetchSurveys = async () => {
             try {
                 console.log("Backend url: " + SURVEYS_BACKEND_URL);

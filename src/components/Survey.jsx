@@ -4,6 +4,7 @@ import {useLocation, useParams} from "react-router-dom";
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
 
 
+
 export default function Survey() {
     const {surveyId} = useParams();
     const location = useLocation();
@@ -11,7 +12,7 @@ export default function Survey() {
     const {testp1, surv} = location.state || {};
     const show = !surv;
     const [mode, setMode] = useState(isRedirectedFromAnswer && (surveyId || surv) ? "answer" : ((surveyId || surv)? "view": "create"));
-        //
+
     console.log(`Survey. Mode: ${mode}. ${surveyId}. ans: ${isRedirectedFromAnswer}. testp1: ${testp1}. surv: ${JSON.stringify(surv)}`);
 
     //const [name, setName] = useState(surv ? surv.name : '');
