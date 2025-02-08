@@ -1,8 +1,6 @@
 import {useState} from 'react';
 import {useLocation, useParams} from "react-router-dom";
-
-const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
-
+import {submitSurvey} from "../api/api.js";
 
 
 export default function Survey() {
@@ -339,20 +337,7 @@ export default function Survey() {
             }
             const bodyStr = JSON.stringify(buildSurveyData(name, description, questions));
             console.log('Request Body:', bodyStr);
-
-            const response = await fetch(SURVEYS_BACKEND_URL + '/api/survey', {
-                method: 'POST',
-                body: bodyStr,
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) {
-                console.error('Failed to create survey');
-                setError('Failed to create survey');
-                return;
-            }
-            const data = await response.text();
+            const data = await submitSurvey(bodyStr);
             console.log("Created ok. id: " + data);
             setResponseData(data);
             setError(null);

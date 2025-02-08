@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-
-const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
+import {deleteSurvey, listSurveys} from '../api/api.js';
 
 export default function Home() {
     const [surveys, setSurveys] = useState([]);
@@ -9,47 +8,31 @@ export default function Home() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleDelete = (surveyId) => {
+    const handleDelete = async (surveyId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
         if (confirmDelete) {
-            fetch(`${SURVEYS_BACKEND_URL}/api/survey/${surveyId}`, {
-                method: "POST"
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        setSurveys((prevSurveys) =>
-                            prevSurveys.filter((survey) => survey.surveyId !== surveyId)
-                        );
-                    } else {
-                        alert("Failed to delete survey.");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error deleting survey:", error);
-                    alert("An error occurred while deleting the survey.");
-                });
+            try {
+                await deleteSurvey(surveyId);
+                setSurveys((prevSurveys) =>
+                    prevSurveys.filter((survey) => survey.surveyId !== surveyId));
+            } catch (error) {
+                console.error("Error deleting survey:", error);
+                alert("An error occurred while deleting the survey. " + error);
+            }
         }
     };
 
     useEffect(() => {
         const fetchSurveys = async () => {
             try {
-                console.log("Backend url: " + SURVEYS_BACKEND_URL);
-                const response = await fetch(`${SURVEYS_BACKEND_URL}/api/survey`);
-                if (!response.ok) {
-                    console.error('Failed to fetch');
-                    return;
-                }
-                const data = await response.json();
+                const data = await listSurveys();
                 setSurveys(data);
-                console.log("Home: " + JSON.stringify(data));
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchSurveys();
     }, []);
 
@@ -63,7 +46,8 @@ export default function Home() {
                 {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
-                            <Link to={`/survey/${survey.surveyId}`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
+                            <Link to={`/survey/${survey.surveyId}`}
+                                  state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
                             <button type="button"
                                     onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {surv: survey}})}
                                     style={{marginLeft: '10px'}}>
@@ -78,7 +62,6 @@ export default function Home() {
                 }
             </ul>
             <button onClick={() => navigate('/survey', {state: {testp1: "value1"}})}>
-                {/*<button onClick={() => window.location.href = '/new'}>*/}
                 Create Survey
             </button>
         </div>
