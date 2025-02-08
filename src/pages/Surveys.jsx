@@ -18,9 +18,8 @@ export default function Surveys() {
                 .then((response) => {
                     if (response.ok) {
                         setSurveys((prevSurveys) =>
-                            prevSurveys.filter((survey) => survey.id !== surveyId)
+                            prevSurveys.filter((survey) => survey.surveyId !== surveyId)
                         );
-                        alert("Survey deleted successfully!");
                     } else {
                         alert("Failed to delete survey.");
                     }
