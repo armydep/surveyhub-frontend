@@ -10,9 +10,11 @@ export default function Survey() {
     const isRedirectedFromAnswer = location.pathname.includes('/survey/answer/');
     const {testp1, surv} = location.state || {};
     const show = !surv;
-    const mode = isRedirectedFromAnswer && (surveyId || surv) ? "answer" : ((surveyId || surv)? "view": "create");
+    const [mode, setMode] = useState(isRedirectedFromAnswer && (surveyId || surv) ? "answer" : ((surveyId || surv)? "view": "create"));
+        //
     console.log(`Survey. Mode: ${mode}. ${surveyId}. ans: ${isRedirectedFromAnswer}. testp1: ${testp1}. surv: ${JSON.stringify(surv)}`);
 
+    //const [name, setName] = useState(surv ? surv.name : '');
 
     const [name, setName] = useState(surv ? surv.name : '');
     const [description, setDescription] = useState(surv ? surv.description : '');
@@ -362,7 +364,7 @@ export default function Survey() {
 
     return (
         <div>
-            <h1>Create New Survey</h1>
+            <h1>Survey ({mode})</h1>
             {show ?
                 (
                     <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
