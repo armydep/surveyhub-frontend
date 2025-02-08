@@ -4,7 +4,7 @@ import {useLocation} from "react-router-dom";
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
 
 
-export default function CreateNewSurvey() {
+export default function Survey() {
     const location = useLocation();
     const {testp1, surv} = location.state || {};
     const show = !surv;

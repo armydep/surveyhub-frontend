@@ -3,7 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
 
-export default function Surveys() {
+export default function Home() {
     const [surveys, setSurveys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,7 +44,7 @@ export default function Surveys() {
                 }
                 const data = await response.json();
                 setSurveys(data);
-                console.log("Surveys: " + JSON.stringify(data));
+                console.log("Home: " + JSON.stringify(data));
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -65,15 +65,21 @@ export default function Surveys() {
                 {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
-                            <Link to={`/new`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
-                            <button type="button" onClick={() => handleDelete(`${survey.surveyId}`)} style={{marginLeft: '10px'}}>
+                            <Link to={`/survey`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
+                            <button type="button"
+                                    onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {surv: survey}})}
+                                    style={{marginLeft: '10px'}}>
+                                Answer
+                            </button>
+                            <button type="button" onClick={() => handleDelete(`${survey.surveyId}`)}
+                                    style={{marginLeft: '10px'}}>
                                 Delete
                             </button>
                         </li>
                     ))
                 }
             </ul>
-            <button onClick={() => navigate('/new', {state: {testp1: "value1"}})}>
+            <button onClick={() => navigate('/survey', {state: {testp1: "value1"}})}>
                 {/*<button onClick={() => window.location.href = '/new'}>*/}
                 Create Survey
             </button>

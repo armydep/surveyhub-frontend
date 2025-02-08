@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Surveys from "./pages/Surveys";
-import CreateSurvey from "./pages/CreateSurvey";
-import ShowSurvey from "./pages/ShowSurvey";
+import Home from "./components/Home.jsx";
+import Survey from "./components/Survey.jsx";
 
 
 export default function App() {
@@ -9,9 +8,11 @@ export default function App() {
     <>
       <Router>
         <Routes>
-          <Route exact path="/" element={<Surveys />} />
-          <Route exact path="/new" element={<CreateSurvey />} />
-          <Route exact path="/survey/:surveyId" element={<ShowSurvey />} />
+          <Route exact path="/home" element={<Home />} />
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/survey" element={<Survey />} />
+          <Route exact path="/survey/answer/:surveyId" element={<Survey />} />
+          <Route exact path="/survey/:surveyId" element={<Survey />} />
         </Routes>
       </Router>
     </>
