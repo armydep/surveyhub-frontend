@@ -9,11 +9,36 @@ export default function Surveys() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
+    const handleDelete = (surveyId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
+        if (confirmDelete) {
+            fetch(`${SURVEYS_BACKEND_URL}/api/survey`, {
+                method: "DELETE",
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        setSurveys((prevSurveys) =>
+                            prevSurveys.filter((survey) => survey.id !== surveyId)
+                        );
+                        alert("Survey deleted successfully!");
+                    } else {
+                        alert("Failed to delete survey.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting survey:", error);
+                    alert("An error occurred while deleting the survey.");
+                });
+        }
+    };
+
     useEffect(() => {
+
+
         const fetchSurveys = async () => {
             try {
                 console.log("Backend url: " + SURVEYS_BACKEND_URL);
-                const response = await fetch(SURVEYS_BACKEND_URL + "/api/survey");
+                const response = await fetch(`${SURVEYS_BACKEND_URL}/api/survey`);
                 if (!response.ok) {
                     console.error('Failed to fetch');
                     return;
@@ -42,6 +67,9 @@ export default function Surveys() {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
                             <Link to={`/new`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
+                            <button type="button" onClick={() => handleDelete(`${survey.surveyId}`)} style={{marginLeft: '10px'}}>
+                                Delete
+                            </button>
                         </li>
                     ))
                 }
