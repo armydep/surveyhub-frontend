@@ -1,14 +1,16 @@
 import {useState} from 'react';
-import {useLocation} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 
 const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
 
 
 export default function Survey() {
+    const {surveyId} = useParams();
     const location = useLocation();
+    const isRedirectedFromAnswer = location.pathname.includes('/survey/answer/');
     const {testp1, surv} = location.state || {};
     const show = !surv;
-    console.log("Create survey testp1: " + testp1 + ". surv: " + JSON.stringify(surv));
+    console.log(`Create survey: ${surveyId}. ans: ${isRedirectedFromAnswer}. testp1: ${testp1}. surv: ${JSON.stringify(surv)}` );
 
     const [name, setName] = useState(surv ? surv.name : '');
     const [description, setDescription] = useState(surv ? surv.description : '');
@@ -147,7 +149,7 @@ export default function Survey() {
                     <div>
                         <label htmlFor="quantity">Max:</label>
                         <input disabled={showCtrls}
-                            onChange={(event) => handleTextMaxSizeChange(index, event)}
+                               onChange={(event) => handleTextMaxSizeChange(index, event)}
                                type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
                     </div>
                 </div>
@@ -165,7 +167,7 @@ export default function Survey() {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea disabled={showCtrls}
-                                value={q.question} placeholder="Type a question (bool)"
+                                      value={q.question} placeholder="Type a question (bool)"
                                       onChange={(event) => handleBooleanQuestionChange(index, event)}
                             />
                 <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
@@ -197,7 +199,8 @@ export default function Survey() {
                     </div>
                     <div>
                         <label htmlFor="quantity">Max:</label>
-                        <input disabled={showCtrls} value={value.max} onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
+                        <input disabled={showCtrls} value={value.max}
+                               onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
                     </div>
                 </div>
                 {
@@ -216,10 +219,11 @@ export default function Survey() {
                             <textarea
                                 disabled={showCtrls}
                                 value={value.question} placeholder="Type a question (optlist)"
-                                      onChange={(event) => handleOptionListQuestionChange(index, event)}/>
+                                onChange={(event) => handleOptionListQuestionChange(index, event)}/>
                 <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
                     <label>Options</label>
-                    <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item</button>
+                    <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
+                    </button>
                     <div>
                         {
                             questions[index].options.map((optitem, ind) => {
@@ -231,7 +235,8 @@ export default function Survey() {
                                             disabled={showCtrls}
                                             value={optitem}
                                             onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
-                                        <button disabled={showCtrls} type="button" onClick={() => removeOptionItem(index, ind)}
+                                        <button disabled={showCtrls} type="button"
+                                                onClick={() => removeOptionItem(index, ind)}
                                                 style={{margin: '10px'}}>Remove option
                                         </button>
                                     </div>

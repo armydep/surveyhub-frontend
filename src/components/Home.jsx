@@ -65,7 +65,7 @@ export default function Home() {
                 {
                     surveys.map(survey => (
                         <li key={survey.surveyId}>
-                            <Link to={`/survey`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
+                            <Link to={`/survey/${survey.surveyId}`} state={{testp1: "value123", surv: survey}}>{survey.name}</Link>
                             <button type="button"
                                     onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {surv: survey}})}
                                     style={{marginLeft: '10px'}}>
