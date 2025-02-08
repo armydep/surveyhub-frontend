@@ -12,8 +12,8 @@ export default function Surveys() {
     const handleDelete = (surveyId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
         if (confirmDelete) {
-            fetch(`${SURVEYS_BACKEND_URL}/api/survey`, {
-                method: "DELETE",
+            fetch(`${SURVEYS_BACKEND_URL}/api/survey/${surveyId}`, {
+                method: "POST"
             })
                 .then((response) => {
                     if (response.ok) {
