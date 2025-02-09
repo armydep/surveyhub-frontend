@@ -47,11 +47,11 @@ export const fetchSurveyById = async (surveyId) => {
 };
 
 export const submitAnswers = async (answerForm) => {
-    return surveyApiRequest('/api/submit', {
+    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey/answers`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(answerForm),
-    });
+    }, "text");
 };

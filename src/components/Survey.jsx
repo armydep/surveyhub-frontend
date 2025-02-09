@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useParams} from "react-router-dom";
-import {fetchSurveyById, submitSurvey} from "../api/api.js";
+import {fetchSurveyById, submitAnswers, submitSurvey} from "../api/api.js";
 
 
 export default function Survey() {
@@ -35,7 +35,7 @@ export default function Survey() {
             }
         };
         initializeMyprop();
-    }, [surveyId, tmpSrvFromHome]); // Depend on surveyId and tmpSrvFromHome
+    }, []);
 
     useEffect(() => {
         if (survey) {
@@ -62,11 +62,15 @@ export default function Survey() {
             setName(survey.name);
             setDescription(survey.description);
             setQuestions(survey.questions);
+            setAnswers(survey.questions.map((qst) => ({type: qst.type, value: ''})));
         }
-    }, [survey]); // Depend on survey
+    }, [survey]);
 
     useEffect(() => {
         console.log(`Survey. Mode: ${mode}. ${surveyId}. survey: ${JSON.stringify(survey)}`);
+        if (mode === "answer") {
+            console.log("In useEffect [survey]. mode: ", mode);
+        }
     }, [mode, survey, surveyId]);
 
     const QUESTION_TYPES = Object.freeze({
@@ -87,14 +91,17 @@ export default function Survey() {
         console.debug("Button add text question. questions size. ", questions.length);
         setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.TEXT, question: "", max: 1, min: 1}]);
     };
+
     const addBoolQuestion = () => {
         console.debug("Button add bool question");
         setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.BOOLEAN, question: ""}]);
     };
+
     const addIntegerQuestion = () => {
         console.debug("Button add int question");
         setQuestions(prevQuestions => [...prevQuestions, {type: QUESTION_TYPES.INTEGER, question: "", min: 0, max: 0}]);
     };
+
     const addOptionListQuestion = () => {
         console.debug("Button add optlist question");
         setQuestions(prevQuestions => [...prevQuestions, {
@@ -103,6 +110,7 @@ export default function Survey() {
             options: []
         }]);
     };
+
     const addOptionItem = (index) => {
         console.debug("Button add option item, index: ", index);
         const allQuestions = [...questions];
@@ -124,7 +132,7 @@ export default function Survey() {
 
     const handleBooleanAnswerChange = (index, event) => {
         const allAnswers = [...answers];
-        allAnswers[index].answer = event.target.value;
+        allAnswers[index].value = event.target.value;
         setAnswers(allAnswers);
     };
 
@@ -133,6 +141,7 @@ export default function Survey() {
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
+
     const handleOptionListQuestionChange = (index, event) => {
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
@@ -174,35 +183,48 @@ export default function Survey() {
         setQuestions(allQuestions);
     };
 
-    function TextQuestionComponent(index, q, showCtrls, showAnswer) {
+    function TextQuestionComponent(index, q, showCtrls, showAnswer, answer) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
-            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
+            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                <div style={{borderStyle: "groove"}}>
                             <textarea value={q.question}
                                       disabled={showCtrls}
                                       placeholder="Type a question (txt)"
                                       onChange={(event) => handleTextQuestionChange(index, event)}/>
-                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
-                    <div>
-                        <label htmlFor="quantity">Min size:</label>
-                        <input
-                            disabled={showCtrls}
-                            onChange={(event) => handleTextMinSizeChange(index, event)}
-                            type="number" name="quantity" min="1" value={q.min}
-                            max="100" step="1"/>
+                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                        <div>
+                            <label htmlFor="quantity">Min size:</label>
+                            <input
+                                disabled={showCtrls}
+                                onChange={(event) => handleTextMinSizeChange(index, event)}
+                                type="number" name="quantity" min="1" value={q.min}
+                                max="100" step="1"/>
+                        </div>
+                        <div>
+                            <label htmlFor="quantity">Max:</label>
+                            <input disabled={showCtrls}
+                                   onChange={(event) => handleTextMaxSizeChange(index, event)}
+                                   type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
+                        </div>
                     </div>
-                    <div>
-                        <label htmlFor="quantity">Max:</label>
-                        <input disabled={showCtrls}
-                               onChange={(event) => handleTextMaxSizeChange(index, event)}
-                               type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
-                    </div>
+                    {
+                        !showCtrls &&
+                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                            Remove (txt)
+                        </button>)
+                    }
                 </div>
                 {
-                    !showCtrls &&
-                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                        Remove (txt)
-                    </button>)
+                    showAnswer &&
+                    (<div
+                        style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                                                <textarea
+                                                    disabled={!showAnswer}
+                                                    value={answer.value} placeholder="Type an answer (txt)"
+                                                    onChange={(event) => handleBooleanAnswerChange(index, event)}
+                                                />
+                    </div>)
                 }
             </div>
         );
@@ -211,7 +233,7 @@ export default function Survey() {
     function BooleanQuestionComponent(index, qst, showCtrls, showAnswer, answer) {
         return (
             <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                <div  style={{borderStyle: "groove"}}>
+                <div style={{borderStyle: "groove"}}>
                             <textarea disabled={showCtrls}
                                       value={qst.question} placeholder="Type a question (bool)"
                                       onChange={(event) => handleBooleanQuestionChange(index, event)}
@@ -228,10 +250,10 @@ export default function Survey() {
                 {
                     showAnswer && (
                         <div
-                             style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                            style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
                                                 <textarea
                                                     disabled={!showAnswer}
-                                                    value={answer} placeholder="Type an answer (bool)"
+                                                    value={answer.value} placeholder="Type an answer (bool)"
                                                     onChange={(event) => handleBooleanAnswerChange(index, event)}
                                                 />
                         </div>)
@@ -240,33 +262,46 @@ export default function Survey() {
         );
     }
 
-    function IntegerQuestionComponent(index, value, showCtrls, showAnswer) {
+    function IntegerQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
+            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                <div style={{borderStyle: "groove"}}>
                             <textarea value={value.question}
                                       disabled={showCtrls}
                                       placeholder="Type a question (int)"
                                       onChange={(event) => handleIntegerQuestionChange(index, event)}/>
-                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
-                    <div>
-                        <label htmlFor="quantity">Min:</label>
-                        <input
-                            disabled={showCtrls}
-                            value={value.min}
-                            onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
+                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                        <div>
+                            <label htmlFor="quantity">Min:</label>
+                            <input
+                                disabled={showCtrls}
+                                value={value.min}
+                                onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
+                        </div>
+                        <div>
+                            <label htmlFor="quantity">Max:</label>
+                            <input disabled={showCtrls} value={value.max}
+                                   onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
+                        </div>
                     </div>
-                    <div>
-                        <label htmlFor="quantity">Max:</label>
-                        <input disabled={showCtrls} value={value.max}
-                               onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
-                    </div>
+                    {
+                        !showCtrls &&
+                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                            Remove (int)
+                        </button>)
+                    }
                 </div>
                 {
-                    !showCtrls &&
-                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                        Remove (int)
-                    </button>)
+                    showAnswer && (
+                        <div
+                            style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                            <input disabled={!showAnswer}
+                                   onChange={(event) => handleBooleanAnswerChange(index, event)}
+                                   value={answer.value}
+                                   type="number" name="quantity" min="1" max="1000" step="1"/>
+                        </div>)
                 }
+
             </div>
         );
     }
@@ -358,8 +393,49 @@ export default function Survey() {
             });
     };
 
+    function isValidTextAnswer(answer, index) {
+        const isValid = answer.value.length >= questions[index].min &&
+            answer.value.length <= questions[index].max;
+        console.log("isValid txt answer: " + isValid + ". " + JSON.stringify(answer) + ". index: " + index);
+        return isValid;
+    }
+
+    function isValidIntegerAnswer(answer, index) {
+        const isValid = answer.value >= questions[index].min &&
+            answer.value <= questions[index].max;
+        console.log("isValid int answer: " + isValid + ". " + JSON.stringify(answer) + ". index: " + index);
+        return isValid;
+    }
+
+    //answer.type === questions[index].type &&
     const isAnswersValid = () => {
-        return false;
+        const isValid = answers.every((ans, index) => {
+            let isVal;
+            switch (ans.type) {
+                case QUESTION_TYPES.TEXT: {
+                    isVal = isValidTextAnswer(ans, index);
+                    break;
+                }
+                case QUESTION_TYPES.INTEGER: {
+                    isVal = isValidIntegerAnswer(ans, index);
+                    break;
+                }
+                case QUESTION_TYPES.BOOLEAN: {
+                    isVal = isValidTextAnswer(ans, index);
+                    break;
+                }
+                case QUESTION_TYPES.OPTION_LIST: {
+                    isVal = isValidTextAnswer(ans, index);
+                    break;
+                }
+                default : {
+                    isVal = false;
+                }
+            }
+            return isVal && ans.type === questions[index].type;
+        });
+        console.log("IsValid: " + isValid + ". ans: " + answers.length + ". qst: " + questions.length);
+        return isValid && questions.length == answers.length;
     };
 
     const removeQuestion = (index) => {
@@ -412,6 +488,34 @@ export default function Survey() {
         }
     };
 
+    const submitSurveyAnswers = async (e) => {
+        try {
+            console.log('Submit answers button:', e);
+            if (!isAnswersValid()) {
+                console.error('Invalid answers form');
+                setError('Invalid answers form');
+                return;
+            }
+
+            const answersBody = {
+                userId: 20024,
+                surveyId: surveyId,
+                timestamp: Date.now(),
+                answers: answers
+            }
+            const respData = await submitAnswers(answersBody);
+            console.log("Answers submitted ok. id: " + respData);
+            setSubmitResponse(respData);
+            setMode("view");
+            setError(null);
+        } catch (err) {
+            setError(err.message);
+            setSubmitResponse(null);
+            console.error("Submit answers error: " + err.message);
+        }
+    };
+
+
     const renderSubmitButton = () => {
         switch (mode) {
             case 'create':
@@ -419,38 +523,34 @@ export default function Survey() {
             case 'view':
                 return <div>View Mode</div>;
             case 'answer':
-                return <button type="submit" disabled={!isAnswersValid()}>Submit Answers</button>;
+                return <button onClick={submitSurveyAnswers}
+                               type="button" disabled={!isAnswersValid()}>Submit Answers</button>;
             default:
                 return <div>Unknown Mode</div>;
         }
     };
 
-    return (
-        <div>
+    return (<div>
             <h1>Survey ({mode})</h1>
             {!survey ?
-                (
-                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
-                        <div>
-                            <button type="button" onClick={addTextQuestion}>Add Text Question</button>
-                        </div>
-                        <div>
-                            <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
-                        </div>
-                        <div>
-                            <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
-                        </div>
-                        <div>
-                            <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
-                        </div>
+                (<div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div>
+                        <button type="button" onClick={addTextQuestion}>Add Text Question</button>
                     </div>
-                ) :
-                (<div>not show</div>)
+                    <div>
+                        <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
+                    </div>
+                </div>) : (<div>not show</div>)
             }
             {
                 survey ?
-                    (
-                        <div>
+                    (<div>
                             <p><strong>Survey ID:</strong>{survey.surveyId}</p>
                             <p><strong>User ID:</strong>{survey.userId}</p>
                             <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
@@ -474,29 +574,24 @@ export default function Survey() {
                 </div>
                 {
                     questions.map((qst, index) => {
-                        console.debug("Iter Question type: " + qst.type + ". index: " + index);
                         const Component = questionComponents[qst.type];
                         return Component(index, qst, survey, mode === 'answer', answers[index]);
                     })
                 }
                 {renderSubmitButton()}
             </form>
-
-            {submitResponse && (
-                <div>
-                    <h2>Survey Created Successfully!</h2>
+            {submitResponse &&
+                (<div>
+                    <h2>Submitted Successfully!</h2>
                     <pre>{JSON.stringify(submitResponse, null, 2)}</pre>
-                </div>
-            )
+                </div>)
             }
-
             {
-                error && (
-                    <div style={{color: 'red'}}>
-                        <h2>Error:</h2>
-                        <p>{error}</p>
-                    </div>
-                )
+                error &&
+                (<div style={{color: 'red'}}>
+                    <h2>Error:</h2>
+                    <p>{error}</p>
+                </div>)
             }
         </div>
     );
