@@ -15,8 +15,11 @@ export default function Survey() {
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
 
+    const [answers, setAnswers] = useState([]);
+
     const [submitResponse, setSubmitResponse] = useState(null);
     const [error, setError] = useState(null);
+
 
     useEffect(() => {
         const initializeMyprop = async () => {
@@ -118,6 +121,13 @@ export default function Survey() {
         allQuestions[index].question = event.target.value;
         setQuestions(allQuestions);
     };
+
+    const handleBooleanAnswerChange = (index, event) => {
+        const allAnswers = [...answers];
+        allAnswers[index].answer = event.target.value;
+        setAnswers(allAnswers);
+    };
+
     const handleIntegerQuestionChange = (index, event) => {
         const allQuestions = [...questions];
         allQuestions[index].question = event.target.value;
@@ -164,7 +174,7 @@ export default function Survey() {
         setQuestions(allQuestions);
     };
 
-    function TextQuestionComponent(index, q, showCtrls) {
+    function TextQuestionComponent(index, q, showCtrls, showAnswer) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
@@ -198,26 +208,39 @@ export default function Survey() {
         );
     }
 
-    function BooleanQuestionComponent(index, q, showCtrls) {
+    function BooleanQuestionComponent(index, qst, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
+            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                <div  style={{borderStyle: "groove"}}>
                             <textarea disabled={showCtrls}
-                                      value={q.question} placeholder="Type a question (bool)"
+                                      value={qst.question} placeholder="Type a question (bool)"
                                       onChange={(event) => handleBooleanQuestionChange(index, event)}
                             />
-                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
-                    {
-                        !showCtrls &&
-                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                            Remove (bool)
-                        </button>)
-                    }
+                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                        {
+                            !showCtrls &&
+                            (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                                Remove (bool)
+                            </button>)
+                        }
+                    </div>
                 </div>
+                {
+                    showAnswer && (
+                        <div
+                             style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                                                <textarea
+                                                    disabled={!showAnswer}
+                                                    value={answer} placeholder="Type an answer (bool)"
+                                                    onChange={(event) => handleBooleanAnswerChange(index, event)}
+                                                />
+                        </div>)
+                }
             </div>
         );
     }
 
-    function IntegerQuestionComponent(index, value, showCtrls) {
+    function IntegerQuestionComponent(index, value, showCtrls, showAnswer) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea value={value.question}
@@ -248,7 +271,7 @@ export default function Survey() {
         );
     }
 
-    function OptionListQuestionComponent(index, value, showCtrls) {
+    function OptionListQuestionComponent(index, value, showCtrls, showAnswer) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea
@@ -334,11 +357,17 @@ export default function Survey() {
                 }
             });
     };
+
+    const isAnswersValid = () => {
+        return false;
+    };
+
     const removeQuestion = (index) => {
         console.debug("Removing question ", index);
         const cQuestions = questions.filter((_, i) => i !== index);
         setQuestions(cQuestions);
     };
+
     const removeOptionItem = (qindex, itemindex) => {
         console.debug(`Removing option item. qindex: ${qindex}. item: ${itemindex}`);
         const updQuestions = [...questions];
@@ -380,6 +409,19 @@ export default function Survey() {
             setError(err.message);
             setSubmitResponse(null);
             console.error("Fetch block error: " + err.message);
+        }
+    };
+
+    const renderSubmitButton = () => {
+        switch (mode) {
+            case 'create':
+                return <button type="submit" disabled={!isFormValid()}>Create Survey</button>;
+            case 'view':
+                return <div>View Mode</div>;
+            case 'answer':
+                return <button type="submit" disabled={!isAnswersValid()}>Submit Answers</button>;
+            default:
+                return <div>Unknown Mode</div>;
         }
     };
 
@@ -431,16 +473,13 @@ export default function Survey() {
                     </div>
                 </div>
                 {
-                    questions.map((q, index) => {
-                        console.debug("Iter Question type: " + q.type + ". index: " + index);
-                        const Component = questionComponents[q.type];
-                        return Component(index, q, survey);
+                    questions.map((qst, index) => {
+                        console.debug("Iter Question type: " + qst.type + ". index: " + index);
+                        const Component = questionComponents[qst.type];
+                        return Component(index, qst, survey, mode === 'answer', answers[index]);
                     })
                 }
-                {!survey ?
-                    (<button type="submit" disabled={!isFormValid()}>Submit Survey</button>) :
-                    (<div>not show but</div>)
-                }
+                {renderSubmitButton()}
             </form>
 
             {submitResponse && (
@@ -448,14 +487,17 @@ export default function Survey() {
                     <h2>Survey Created Successfully!</h2>
                     <pre>{JSON.stringify(submitResponse, null, 2)}</pre>
                 </div>
-            )}
+            )
+            }
 
-            {error && (
-                <div style={{color: 'red'}}>
-                    <h2>Error:</h2>
-                    <p>{error}</p>
-                </div>
-            )}
+            {
+                error && (
+                    <div style={{color: 'red'}}>
+                        <h2>Error:</h2>
+                        <p>{error}</p>
+                    </div>
+                )
+            }
         </div>
     );
 };

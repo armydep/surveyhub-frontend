@@ -19,3 +19,24 @@ npm run build
 
 run:
 npm run dev
+
+nginx:
+-------
+`server {
+    listen 80;
+    server_name raspub 192.168.1.102;
+    root /home/enruxer/gen-frontend/dist;
+    index index.html;
+
+    location / {
+            try_files $uri $uri/ /index.html;
+    }
+
+    error_page 404 /index.html;
+
+    location /api {
+        proxy_pass http://localhost:8080/api;
+    }
+
+}
+`------
