@@ -130,7 +130,7 @@ export default function Survey() {
         setQuestions(allQuestions);
     };
 
-    const handleBooleanAnswerChange = (index, event) => {
+    const handleAnswerChange = (index, event) => {
         const allAnswers = [...answers];
         allAnswers[index].value = event.target.value;
         setAnswers(allAnswers);
@@ -222,7 +222,7 @@ export default function Survey() {
                                                 <textarea
                                                     disabled={!showAnswer}
                                                     value={answer.value} placeholder="Type an answer (txt)"
-                                                    onChange={(event) => handleBooleanAnswerChange(index, event)}
+                                                    onChange={(event) => handleAnswerChange(index, event)}
                                                 />
                     </div>)
                 }
@@ -251,11 +251,31 @@ export default function Survey() {
                     showAnswer && (
                         <div
                             style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                                                <textarea
-                                                    disabled={!showAnswer}
-                                                    value={answer.value} placeholder="Type an answer (bool)"
-                                                    onChange={(event) => handleBooleanAnswerChange(index, event)}
-                                                />
+
+                            <h2>Choose an Option:</h2>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="options"
+                                    value="true"
+                                    checked={answer.value === 'true'}
+                                    onChange={(e) => handleAnswerChange(index, e)}
+                                />
+                                true
+                            </label>
+                            <br/>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="options"
+                                    value="false"
+                                    checked={answer.value === 'false'}
+                                    onChange={(e) => handleAnswerChange(index, e)}
+                                />
+                                false
+                            </label>
+                            <br/>
+                            <p>Selected Option: {answer.value}</p>
                         </div>)
                 }
             </div>
@@ -296,7 +316,7 @@ export default function Survey() {
                         <div
                             style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
                             <input disabled={!showAnswer}
-                                   onChange={(event) => handleBooleanAnswerChange(index, event)}
+                                   onChange={(event) => handleAnswerChange(index, event)}
                                    value={answer.value}
                                    type="number" name="quantity" min="1" max="1000" step="1"/>
                         </div>)
@@ -306,7 +326,7 @@ export default function Survey() {
         );
     }
 
-    function OptionListQuestionComponent(index, value, showCtrls, showAnswer) {
+    function OptionListQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
             <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
                             <textarea
