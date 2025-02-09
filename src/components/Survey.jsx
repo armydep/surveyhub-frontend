@@ -251,12 +251,10 @@ export default function Survey() {
                     showAnswer && (
                         <div
                             style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-
-                            <h2>Choose an Option:</h2>
-                            <label>
+                            <label key={'b1'}>
                                 <input
                                     type="radio"
-                                    name="options"
+                                    name={`options-${index}-true`}
                                     value="true"
                                     checked={answer.value === 'true'}
                                     onChange={(e) => handleAnswerChange(index, e)}
@@ -264,10 +262,10 @@ export default function Survey() {
                                 true
                             </label>
                             <br/>
-                            <label>
+                            <label key={'b2'}>
                                 <input
                                     type="radio"
-                                    name="options"
+                                    name={`options-${index}-false`}
                                     value="false"
                                     checked={answer.value === 'false'}
                                     onChange={(e) => handleAnswerChange(index, e)}
@@ -328,43 +326,73 @@ export default function Survey() {
 
     function OptionListQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "groove"}}>
+            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                <div style={{borderStyle: "groove"}}>
                             <textarea
                                 disabled={showCtrls}
                                 value={value.question} placeholder="Type a question (optlist)"
                                 onChange={(event) => handleOptionListQuestionChange(index, event)}/>
-                <div key={index} style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
-                    <label>Options</label>
-                    <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
-                    </button>
-                    <div>
-                        {
-                            questions[index].options.map((optitem, ind) => {
-                                console.debug("Option item: " + optitem + ". index: " + ind);
-                                return (
-                                    <div key={ind} style={{margin: '20px'}}>
-                                        <label>{ind}:</label>
-                                        <input
-                                            disabled={showCtrls}
-                                            value={optitem}
-                                            onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
-                                        <button disabled={showCtrls} type="button"
-                                                onClick={() => removeOptionItem(index, ind)}
-                                                style={{margin: '10px'}}>Remove option
-                                        </button>
-                                    </div>
-                                );
-                            })
-                        }
-                    </div>
+                    <div style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
+                        <label>Options</label>
+                        <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
+                        </button>
+                        <div>
+                            {
+                                questions[index].options.map((optitem, ind) => {
+                                    console.debug("Option item: " + optitem + ". index: " + ind);
+                                    return (
+                                        <div key={ind} style={{margin: '20px'}}>
+                                            <label>{ind}:</label>
+                                            <input
+                                                disabled={showCtrls}
+                                                value={optitem}
+                                                onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
+                                            <button disabled={showCtrls} type="button"
+                                                    onClick={() => removeOptionItem(index, ind)}
+                                                    style={{margin: '10px'}}>Remove option
+                                            </button>
+                                        </div>
+                                    );
+                                })
+                            }
+                        </div>
 
+                    </div>
+                    {
+                        !showCtrls &&
+                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                            Remove (optlist)
+                        </button>)
+                    }
                 </div>
                 {
-                    !showCtrls &&
-                    (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
-                        Remove (optlist)
-                    </button>)
+                    showAnswer &&
+                    (
+                        questions[index].options.map((opt, ind) => {
+                            const isChecked = (answer.value === (value.options.indexOf(opt)));
+                            console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
+                            return (
+                                <label key={ind}>
+                                    <input
+                                        type="radio"
+                                        name={`options-${index}-${ind}`}
+                                        value={opt}
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                handleAnswerChange(index, {target: {value: ind}});
+                                            } else {
+                                                //handleAnswerChange(index, {target: {value: ind}});
+                                            }
+                                        }}
+                                    />
+                                    {opt}
+                                </label>
+                            )
+                        })
+                    )
                 }
+
             </div>
         );
     }
@@ -433,7 +461,12 @@ export default function Survey() {
         return isValid;
     }
 
-    //answer.type === questions[index].type &&
+    function isValidOptionListAnswer(answer, index) {
+        const isValid = (isNonEmptyInteger(answer.value) && answer.value >=0 && answer.value < questions[index].options.length);
+        console.log("isValid opt list answer: " + isValid + ". " + JSON.stringify(answer) + ". index: " + index);
+        return isValid;
+    }
+
     const isAnswersValid = () => {
         const isValid = answers.every((ans, index) => {
             let isVal;
@@ -451,7 +484,7 @@ export default function Survey() {
                     break;
                 }
                 case QUESTION_TYPES.OPTION_LIST: {
-                    isVal = isValidTextAnswer(ans, index);
+                    isVal = isValidOptionListAnswer(ans, index);
                     break;
                 }
                 default : {
@@ -461,7 +494,7 @@ export default function Survey() {
             return isVal && ans.type === questions[index].type;
         });
         console.log("IsValid: " + isValid + ". ans: " + answers.length + ". qst: " + questions.length);
-        return isValid && questions.length == answers.length;
+        return isValid && questions.length === answers.length;
     };
 
     const removeQuestion = (index) => {
@@ -532,7 +565,7 @@ export default function Survey() {
             const respData = await submitAnswers(answersBody);
             console.log("Answers submitted ok. id: " + respData);
             setSubmitResponse(respData);
-            setMode("view");
+            //setMode("view");
             setError(null);
         } catch (err) {
             setError(err.message);
