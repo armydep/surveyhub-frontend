@@ -427,6 +427,12 @@ export default function Survey() {
         return isValid;
     }
 
+    function isValidBooleanAnswer(answer, index) {
+        const isValid = (answer.value === 'true' || answer.value === 'false');
+        console.log("isValid bool answer: " + isValid + ". " + JSON.stringify(answer) + ". index: " + index);
+        return isValid;
+    }
+
     //answer.type === questions[index].type &&
     const isAnswersValid = () => {
         const isValid = answers.every((ans, index) => {
@@ -441,7 +447,7 @@ export default function Survey() {
                     break;
                 }
                 case QUESTION_TYPES.BOOLEAN: {
-                    isVal = isValidTextAnswer(ans, index);
+                    isVal = isValidBooleanAnswer(ans, index);
                     break;
                 }
                 case QUESTION_TYPES.OPTION_LIST: {
