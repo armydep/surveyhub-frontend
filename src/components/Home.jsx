@@ -7,6 +7,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const columns = ["#", "id", "name", "user", "created", "view", "answer", "delete"];
 
     const handleDelete = async (surveyId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
@@ -26,7 +27,7 @@ export default function Home() {
         const fetchSurveys = async () => {
             try {
                 const data = await listSurveys();
-                setSurveys(data);
+                setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -41,29 +42,48 @@ export default function Home() {
 
     return (
         <div>
-            <h1>Surveys List</h1>
-            <ul>
-                {
-                    surveys.map(survey => (
-                        <li key={survey.surveyId}>
-                            <Link to={`/survey/${survey.surveyId}`}
-                                  state={{tmpSrvFromHome: survey}}>{survey.name}</Link>
-                            <button type="button"
-                                    onClick={() => navigate(`/survey/answer/${survey.surveyId}`, {state: {tmpSrvFromHome: survey}})}
-                                    style={{marginLeft: '10px'}}>
-                                Answer
-                            </button>
-                            <button type="button" onClick={() => handleDelete(`${survey.surveyId}`)}
-                                    style={{marginLeft: '10px'}}>
-                                Delete
-                            </button>
-                        </li>
-                    ))
-                }
-            </ul>
-            <button onClick={() => navigate('/survey', {state: {}})}>
-                Create Survey
-            </button>
-        </div>
-    );
-};
+            <h1>Surveys</h1>
+            <div>
+                <table border="1" cellPadding="5">
+                    <thead>
+                    <tr>
+                        {columns.map((col) => (
+                            <th key={col}>{col.toUpperCase()}</th>
+                        ))}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {surveys.map((row, rowInd) => (
+                        <tr key={row.rowInd}>
+                            <td>{rowInd}</td>
+                            <td>{row.surveyId}</td>
+                            <td>{row.name}</td>
+                            <td>{row.userId}</td>
+                            <td>{new Date(row.timestamp).toLocaleString()}</td>
+                            <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
+                            <td>{(<button type="button" style={{marginLeft: '10px'}}
+                                          onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
+                                    Answer
+                                </button>)}
+                            < /td>
+                            <td>{(<button type="button" onClick={() => handleDelete(`${row.surveyId}`)}
+                                          style={{marginLeft: '10px'}}>
+                                    Delete
+                                </button>)}
+                            < /td>
+
+                            {/*columns.map((col, colInd) => (
+                                <td key={col.colInd}>{row[col]}</td>
+                            ))*/}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                        </div>
+
+                        <button onClick={() => navigate('/survey', {state: {}})}>
+                    Create Survey
+                    </button>
+            </div>
+            );
+            };
