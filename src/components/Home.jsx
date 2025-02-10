@@ -7,7 +7,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const columns = ["#", "id", "name", "user", "created", "view", "answer", "delete"];
+    const columns = ["#", "name", "user", "created", "view", "answer", "delete"];
 
     const handleDelete = async (surveyId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
@@ -44,7 +44,7 @@ export default function Home() {
         <div>
             <h1>Surveys</h1>
             <div>
-                <table border="1" cellPadding="5">
+                <table border="1" cellPadding="5" style={{borderStyle: "unset"}}>
                     <thead>
                     <tr>
                         {columns.map((col) => (
@@ -56,7 +56,6 @@ export default function Home() {
                     {surveys.map((row, rowInd) => (
                         <tr key={row.rowInd}>
                             <td>{rowInd}</td>
-                            <td>{row.surveyId}</td>
                             <td>{row.name}</td>
                             <td>{row.userId}</td>
                             <td>{new Date(row.timestamp).toLocaleString()}</td>
