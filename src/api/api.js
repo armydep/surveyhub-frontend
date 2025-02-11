@@ -1,4 +1,5 @@
-const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";//"http://armydep.duckdns.org:8080";
+const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";
+// const SURVEYS_BACKEND_URL = "http://localhost:8080";
 
 const surveyApiRequest = async (url, options = {}, resp = "text") => {
     try {

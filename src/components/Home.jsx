@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
 
@@ -8,6 +8,59 @@ export default function Home() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const columns = ["#", "name", "user", "created", "view", "answer", "delete"];
+    const socketRef = useRef(null);
+
+    useEffect(() => {
+        console.log("Init. fetch surveys data");
+        const fetchSurveys = async () => {
+            try {
+                const odata = await listSurveys();
+                const data = odata.map(item => ({...item, countAnswers: 10}));
+                setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
+                initWebSockets();
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSurveys();
+        return () => {
+            socketRef.current && socketRef.current.close();
+        };
+    }, []);
+
+    const initWebSockets = async () => {
+        console.log("Websockets init");
+        //socketRef.current = new WebSocket('ws://localhost:8080/ws'); // const socket = new WebSocket('ws://armydep.duckdns.org/ws');
+        socketRef.current = new WebSocket('ws://armydep.duckdns.org/ws');
+
+        socketRef.current.onopen = () => {
+            console.log('WebSocket connected');
+            socketRef.current.send('Hello from React!');
+        };
+
+        socketRef.current.onmessage = (event) => {
+            console.log('Received:', event.data);
+            const udata = JSON.parse(event.data);
+            setSurveys((prevData) => prevData.map(item => {
+                if (item.surveyId === udata.surveyId) {
+                    return {...item, countAnswers: udata.answersCount};
+                } else {
+                    return item;
+                }
+            }));
+            socketRef.current.send('Ack from client: ' + event.data);
+        };
+
+        socketRef.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socketRef.current.onclose = () => {
+            console.log('WebSocket connection closed.');
+        };
+    }
 
     const handleDelete = async (surveyId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this survey?");
@@ -23,20 +76,6 @@ export default function Home() {
         }
     };
 
-    useEffect(() => {
-        const fetchSurveys = async () => {
-            try {
-                const data = await listSurveys();
-                setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSurveys();
-    }, []);
-
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
@@ -47,14 +86,14 @@ export default function Home() {
                 <table border="1" cellPadding="5" style={{borderStyle: "unset"}}>
                     <thead>
                     <tr>
-                        {columns.map((col) => (
-                            <th key={col}>{col.toUpperCase()}</th>
+                        {columns.map((col, index) => (
+                            <th key={index}>{col.toUpperCase()}</th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
                     {surveys.map((row, rowInd) => (
-                        <tr key={row.rowInd}>
+                        <tr key={row.surveyId}>
                             <td>{rowInd}</td>
                             <td>{row.name}</td>
                             <td>{row.userId}</td>
@@ -62,13 +101,13 @@ export default function Home() {
                             <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
                             <td>{(<button type="button" style={{marginLeft: '10px'}}
                                           onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
-                                    Answer
-                                </button>)}
+                                Answer({row.countAnswers})
+                            </button>)}
                             < /td>
                             <td>{(<button type="button" onClick={() => handleDelete(`${row.surveyId}`)}
                                           style={{marginLeft: '10px'}}>
-                                    Delete
-                                </button>)}
+                                Delete
+                            </button>)}
                             < /td>
 
                             {/*columns.map((col, colInd) => (
@@ -78,11 +117,11 @@ export default function Home() {
                     ))}
                     </tbody>
                 </table>
-                        </div>
-
-                        <button onClick={() => navigate('/survey', {state: {}})}>
-                    Create Survey
-                    </button>
             </div>
-            );
-            };
+
+            <button onClick={() => navigate('/survey', {state: {}})}>
+                Create Survey
+            </button>
+        </div>
+    );
+};
