@@ -16,7 +16,7 @@ export default function Home() {
         const fetchSurveys = async () => {
             try {
                 const odata = await listSurveys();
-                const data = odata.map(item => ({...item, countAnswers: 10}));
+                const data = odata.map(item => ({...item, countAnswers: ""}));
                 setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
                 initWebSockets();
             } catch (err) {
@@ -57,13 +57,17 @@ export default function Home() {
                 }
                 case "surveyDelete": {
                     console.log('WS received \'surveyDelete\' message: ', event.data);
-                    setSurveys((prevSurveys) =>
-                        prevSurveys.filter((survey) => survey.surveyId !== udata.surveyId));
+                    setSurveys((prev) => prev.filter(surv => surv.surveyId !== udata.surveyId));
                     break;
                 }
                 case "surveyCreate": {
                     console.log('WS received \'surveyCreate\' message: ', event.data);
                     //setSurveys((prevSurveys) =>prevSurveys.filter((survey) => survey.surveyId !== udata.surveyId));
+                    //setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
+                    setSurveys(prev => {
+                        const upd = [...prev, udata.survey];
+                        return upd.sort((a, b) => b.timestamp - a.timestamp)
+                    });
                     break;
                 }
                 default : {
