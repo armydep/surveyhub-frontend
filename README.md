@@ -24,21 +24,38 @@ nginx:
 -------
 `
 
-    server	{
-       listen 80;
-       server_name raspub 192.168.1.102;
-       root /home/enruxer/gen-frontend/dist;
-       index index.html;
-   
-       location / {
-               try_files $uri $uri/ /index.html;
-       }
-   
-       error_page 404 /index.html;
-   
-       location /api {
-           proxy_pass http://localhost:8080/api;
-       }
-    }
+    server {
+      listen 80;  
+      server_name raspub 192.168.1.102;                                                                                                                                                                                                               root /home/enruxer/gen-frontend/dist;              
+      index index.html;
+  
+      location / {
+              try_files $uri $uri/ /index.html;
+      }
+  
+      error_page 404 /index.html;
+  
+      location /api {
+          proxy_pass http://localhost:8080/api;
+          #add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+          #add_header Access-Control-Allow-Headers "Authorization, Content-Type";
+          #add_header Access-Control-Allow-Origin *;
+          #if ($request_method = OPTIONS) {
+                  #add_header Allow "POST, OPTIONS, PUT, DELETE, GET";
+              #add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept";
+              #add_header Access-Control-Allow-Origin "*";
+              #return 200;
+              #   }
+      }
+  
+      location /ws/api {
+          proxy_pass http://localhost:8080/ws/api;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "Upgrade";
+          proxy_set_header Host $host;
+      }
+   }  
+
 `
 ------
