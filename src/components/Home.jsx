@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
+import {BACKEND_WS_URL} from '../../config.js'
 
 export default function Home() {
     const [surveys, setSurveys] = useState([]);
@@ -32,8 +33,7 @@ export default function Home() {
 
     const initWebSockets = async () => {
         console.log("Websockets init");
-        //socketRef.current = new WebSocket('ws://localhost:8080/ws'); // const socket = new WebSocket('ws://armydep.duckdns.org/ws');
-        socketRef.current = new WebSocket('ws://armydep.duckdns.org/ws');
+        socketRef.current = new WebSocket(BACKEND_WS_URL);
 
         socketRef.current.onopen = () => {
             console.log('WebSocket connected');
@@ -41,16 +41,35 @@ export default function Home() {
         };
 
         socketRef.current.onmessage = (event) => {
-            console.log('Received:', event.data);
             const udata = JSON.parse(event.data);
-            setSurveys((prevData) => prevData.map(item => {
-                if (item.surveyId === udata.surveyId) {
-                    return {...item, countAnswers: udata.answersCount};
-                } else {
-                    return item;
+            switch (udata.type) {
+                case "ansCount": {
+                    console.log('WS received \'ansCount\' meessage: ', event.data);
+                    setSurveys((prevData) => prevData.map(item => {
+                        if (item.surveyId === udata.surveyId) {
+                            return {...item, countAnswers: udata.answersCount};
+                        } else {
+                            return item;
+                        }
+                    }));
+                    socketRef.current.send('Ack from client: ' + event.data);
+                    break;
                 }
-            }));
-            socketRef.current.send('Ack from client: ' + event.data);
+                case "surveyDelete": {
+                    console.log('WS received \'surveyDelete\' message: ', event.data);
+                    setSurveys((prevSurveys) =>
+                        prevSurveys.filter((survey) => survey.surveyId !== udata.surveyId));
+                    break;
+                }
+                case "surveyCreate": {
+                    console.log('WS received \'surveyCreate\' message: ', event.data);
+                    //setSurveys((prevSurveys) =>prevSurveys.filter((survey) => survey.surveyId !== udata.surveyId));
+                    break;
+                }
+                default : {
+                    console.error("Unknown websocket message type: " + udata.type);
+                }
+            }
         };
 
         socketRef.current.onerror = (error) => {

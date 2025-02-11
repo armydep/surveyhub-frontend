@@ -1,9 +1,8 @@
-const SURVEYS_BACKEND_URL = "http://armydep.duckdns.org";
-// const SURVEYS_BACKEND_URL = "http://localhost:8080";
+import {BACKEND_API_URL} from '../../config.js'
 
 const surveyApiRequest = async (url, options = {}, resp = "text") => {
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(BACKEND_API_URL + url, options);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -19,19 +18,19 @@ const surveyApiRequest = async (url, options = {}, resp = "text") => {
 };
 
 export const listSurveys = async () => {
-    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey`, {
+    return surveyApiRequest("/api/survey", {
         method: "GET"
     }, "json");
 };
 
 export const deleteSurvey = async (surveyId) => {
-    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey/${surveyId}`, {
+    return surveyApiRequest(`/api/survey/${surveyId}`, {
         method: "POST"
     }, "text");
 };
 
 export const submitSurvey = async (survey) => {
-    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey`, {
+    return surveyApiRequest("/api/survey", {
         method: 'POST',
         body: survey,
         headers: {
@@ -42,13 +41,13 @@ export const submitSurvey = async (survey) => {
 
 export const fetchSurveyById = async (surveyId) => {
     console.log("Fetching survey by id: ", surveyId)
-    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey/${surveyId}`, {
+    return surveyApiRequest(`/api/survey/${surveyId}`, {
         method: 'GET',
     }, "json");
 };
 
 export const submitAnswers = async (answerForm) => {
-    return surveyApiRequest(`${SURVEYS_BACKEND_URL}/api/survey/answers`, {
+    return surveyApiRequest("/api/survey/answers", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
