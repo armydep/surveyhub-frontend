@@ -137,10 +137,6 @@ export default function Home() {
                                 Delete
                             </button>)}
                             < /td>
-
-                            {/*columns.map((col, colInd) => (
-                                <td key={col.colInd}>{row[col]}</td>
-                            ))*/}
                         </tr>
                     ))}
                     </tbody>
