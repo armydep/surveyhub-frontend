@@ -37,12 +37,16 @@ export default function Home() {
 
         socketRef.current.onopen = () => {
             console.log('WebSocket connected');
-            socketRef.current.send('Hello from React!');
+            socketRef.current.send('Hello from SH-FrontEnd (React)');
         };
 
         socketRef.current.onmessage = (event) => {
             const udata = JSON.parse(event.data);
             switch (udata.type) {
+                case "hello": {
+                    console.log("Hello message from WS server: " + event.data);
+                    break;
+                }
                 case "ansCount": {
                     console.log('WS received \'ansCount\' meessage: ', event.data);
                     setSurveys((prevData) => prevData.map(item => {
