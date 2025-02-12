@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
 import {BACKEND_WS_URL} from '../../config.js'
+import '../styles/Home.css'
 
 export default function Home() {
     const [surveys, setSurveys] = useState([]);
@@ -107,20 +108,20 @@ export default function Home() {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
+        <div className="container">
             <h1>Surveys</h1>
-            <div>
+            <div className="data-container">
                 <table border="1" cellPadding="5" style={{borderStyle: "unset"}}>
                     <thead>
                     <tr>
                         {columns.map((col, index) => (
-                            <th key={index}>{col.toUpperCase()}</th>
+                            <th key={index} className="data-item">{col.toUpperCase()}</th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
                     {surveys.map((row, rowInd) => (
-                        <tr key={row.surveyId}>
+                        <tr key={row.surveyId} className="data-item">
                             <td>{rowInd}</td>
                             <td>{row.name}</td>
                             <td>{row.userId}</td>
