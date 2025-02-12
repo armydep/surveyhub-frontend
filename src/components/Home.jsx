@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
-import {BACKEND_WS_URL} from '../../config.js'
+import {BACKEND_WS_URL} from '../config.js'
 import '../styles/Home.css'
 
 export default function Home() {

@@ -1,4 +1,4 @@
-import {BACKEND_API_URL} from '../../config.js'
+import {BACKEND_API_URL} from '../config.js'
 
 const surveyApiRequest = async (url, options = {}, resp = "text") => {
     try {
