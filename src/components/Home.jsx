@@ -15,8 +15,8 @@ export default function Home() {
         console.log("Init. fetch surveys data");
         const fetchSurveys = async () => {
             try {
-                const odata = await listSurveys();
-                const data = odata.map(item => ({...item, countAnswers: ""}));
+                const data = await listSurveys();
+                //const data = odata.map(item => ({...item, countAnswers: ""}));
                 setSurveys(data.sort((a, b) => b.timestamp - a.timestamp));
                 initWebSockets();
             } catch (err) {
@@ -47,7 +47,7 @@ export default function Home() {
                     console.log('WS received \'ansCount\' meessage: ', event.data);
                     setSurveys((prevData) => prevData.map(item => {
                         if (item.surveyId === udata.surveyId) {
-                            return {...item, countAnswers: udata.answersCount};
+                            return {...item, answerCount: udata.answerCount};
                         } else {
                             return item;
                         }
@@ -124,7 +124,7 @@ export default function Home() {
                             <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
                             <td>{(<button type="button" style={{marginLeft: '10px'}}
                                           onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
-                                Answer({row.countAnswers})
+                                Answer({row.answerCount})
                             </button>)}
                             < /td>
                             <td>{(<button type="button" onClick={() => handleDelete(`${row.surveyId}`)}
