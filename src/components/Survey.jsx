@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useParams} from "react-router-dom";
 import {fetchSurveyById, submitAnswers, submitSurvey} from "../api/api.js";
-
+import '../styles/Survey.css'
 
 export default function Survey() {
     const {surveyId} = useParams();
@@ -186,15 +186,14 @@ export default function Survey() {
     function TextQuestionComponent(index, q, showCtrls, showAnswer, answer) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
-            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-
-                <div style={{borderStyle: "groove"}}>
-                    <div>question (text)</div>
+            <div key={index} className="form-group bordered">
+                <div className="form-section">
+                    <div><strong>Question (text)</strong></div>
                     <textarea value={q.question}
                               disabled={showCtrls}
                               placeholder="Type a question (txt)"
                               onChange={(event) => handleTextQuestionChange(index, event)}/>
-                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div className="form-group">
                         <div>
                             <label htmlFor="quantity">Min size:</label>
                             <input
@@ -214,16 +213,15 @@ export default function Survey() {
                     </div>
                     {
                         !showCtrls &&
-                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        (<button type="button" onClick={() => removeQuestion(index)}>
                             Remove (txt)
                         </button>)
                     }
                 </div>
                 {
                     showAnswer &&
-                    (<div
-                        style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                        <div>answer (text)</div>
+                    (<div className="form-section bordered">
+                        <div><strong>Answer (text)</strong></div>
                         <textarea
                             disabled={!showAnswer}
                             value={answer.value} placeholder="Type an answer (txt)"
@@ -237,17 +235,16 @@ export default function Survey() {
 
     function BooleanQuestionComponent(index, qst, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                <div style={{borderStyle: "groove"}}>
-                    <div>question (bool)</div>
+            <div key={index} className="form-group bordered">
+                <div className="form-section">
+                    <div><strong>Question (bool)</strong></div>
                     <textarea disabled={showCtrls}
-                              value={qst.question} placeholder="Type a question (bool)"
                               onChange={(event) => handleBooleanQuestionChange(index, event)}
-                    />
-                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                              value={qst.question} placeholder="Type a question (bool)"/>
+                    <div>
                         {
                             !showCtrls &&
-                            (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                            (<button type="button" onClick={() => removeQuestion(index)}>
                                 Remove (bool)
                             </button>)
                         }
@@ -255,30 +252,30 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                            <div>answer (bool)</div>
-                            <label key={'b1'}>
-                                <input
-                                    type="radio"
-                                    name={`options-${index}-true`}
-                                    value="true"
-                                    checked={answer.value === 'true'}
-                                    onChange={(e) => handleAnswerChange(index, e)}
-                                />
-                                true
-                            </label>
-                            <br/>
-                            <label key={'b2'}>
-                                <input
-                                    type="radio"
-                                    name={`options-${index}-false`}
-                                    value="false"
-                                    checked={answer.value === 'false'}
-                                    onChange={(e) => handleAnswerChange(index, e)}
-                                />
-                                false
-                            </label>
-                            <br/>
+                        <div className="form-section bordered">
+                            <div><strong>Answer (bool)</strong></div>
+                            <div className="radio-group">
+                                <label key={'b1'}>
+                                    <input
+                                        type="radio"
+                                        name={`options-${index}-true`}
+                                        value="true"
+                                        checked={answer.value === 'true'}
+                                        onChange={(e) => handleAnswerChange(index, e)}
+                                    />
+                                    true
+                                </label>
+                                <label key={'b2'}>
+                                    <input
+                                        type="radio"
+                                        name={`options-${index}-false`}
+                                        value="false"
+                                        checked={answer.value === 'false'}
+                                        onChange={(e) => handleAnswerChange(index, e)}
+                                    />
+                                    false
+                                </label>
+                            </div>
                             <p>Selected Option: {answer.value}</p>
                         </div>)
                 }
@@ -288,14 +285,14 @@ export default function Survey() {
 
     function IntegerQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                <div style={{borderStyle: "groove"}}>
-                    <div>question (int)</div>
+            <div key={index} className="form-group bordered">
+                <div className="form-section">
+                    <div><strong>Question (int)</strong></div>
                     <textarea value={value.question}
                               disabled={showCtrls}
                               placeholder="Type a question (int)"
                               onChange={(event) => handleIntegerQuestionChange(index, event)}/>
-                    <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                    <div className="form-group">
                         <div>
                             <label htmlFor="quantity">Min:</label>
                             <input
@@ -315,15 +312,15 @@ export default function Survey() {
                     </div>
                     {
                         !showCtrls &&
-                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        (<button type="button" onClick={() => removeQuestion(index)}>
                             Remove (int)
                         </button>)
                     }
                 </div>
                 {
                     showAnswer && (
-                        <div style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                            <div>answer (int)</div>
+                        <div  className="form-section bordered">
+                            <div><strong>Answer (int)</strong></div>
                             <input disabled={!showAnswer}
                                    onChange={(event) => handleAnswerChange(index, event)}
                                    value={answer.value}
@@ -337,42 +334,41 @@ export default function Survey() {
 
     function OptionListQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                <div style={{borderStyle: "groove"}}>
-                    <div>question (optlist)</div>
+            <div key={index} className="form-group bordered">
+                <div className="form-section">
+                    <div><strong>Question (optlist)</strong></div>
                     <textarea
                         disabled={showCtrls}
                         value={value.question} placeholder="Type a question (optlist)"
                         onChange={(event) => handleOptionListQuestionChange(index, event)}/>
-                    <div style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
+                    <div className="bordered" style={{marginTop: "10px", marginBottom: "10px", padding: "10px"}}>
                         <label>Options</label>
                         <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
                         </button>
-                        <div>
+                        <div className="option-list">
                             {
                                 questions[index].options.map((optitem, ind) => {
                                     console.debug("Option item: " + optitem + ". index: " + ind);
                                     return (
-                                        <div key={ind} style={{margin: '20px'}}>
+                                        <div key={ind} className="option-item">
                                             <label>{ind}:</label>
                                             <input
                                                 disabled={showCtrls}
                                                 value={optitem}
                                                 onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
                                             <button disabled={showCtrls} type="button"
-                                                    onClick={() => removeOptionItem(index, ind)}
-                                                    style={{margin: '10px'}}>Remove option
+                                                    style={{marginLeft: "10px"}}
+                                                    onClick={() => removeOptionItem(index, ind)}>Remove option
                                             </button>
                                         </div>
                                     );
                                 })
                             }
                         </div>
-
                     </div>
                     {
                         !showCtrls &&
-                        (<button type="button" onClick={() => removeQuestion(index)} style={{marginLeft: '10px'}}>
+                        (<button type="button" onClick={() => removeQuestion(index)}>
                             Remove (optlist)
                         </button>)
                     }
@@ -380,8 +376,8 @@ export default function Survey() {
                 {
                     showAnswer &&
                     (
-                        <div>
-                            <div>answer (optlist)</div>
+                        <div className="form-section">
+                            <div><strong>Answer (optlist)</strong></div>
                             {questions[index].options.map((opt, ind) => {
                                 const isChecked = (answer.value === (value.options.indexOf(opt)));
                                 console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
@@ -604,10 +600,10 @@ export default function Survey() {
         }
     };
 
-    return (<div>
+    return (<div className="container">
             <h1>Survey ({mode})</h1>
             {!survey ?
-                (<div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                (<div>
                     <div>
                         <button type="button" onClick={addTextQuestion}>Add Text Question</button>
                     </div>
@@ -624,7 +620,7 @@ export default function Survey() {
             }
             {
                 survey ?
-                    (<div>
+                    (<div className="survey-info">
                             <p><strong>Survey ID:</strong>{survey.surveyId}</p>
                             <p><strong>User ID:</strong>{survey.userId}</p>
                             <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
@@ -632,7 +628,7 @@ export default function Survey() {
                     ) : (<div>new survey</div>)
             }
             <form onSubmit={handleSubmit}>
-                <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                <div className="form-group">
                     <div>
                         <label>Name:</label>
                         <input type="text" value={name}

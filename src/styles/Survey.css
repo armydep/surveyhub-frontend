@@ -1,0 +1,137 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Container Style */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+/* Survey Info */
+.survey-info {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #e9f2fb;
+    border-radius: 4px;
+}
+
+.survey-info p {
+    margin-bottom: 5px;
+}
+
+/* Form Styles */
+form {
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group div {
+    flex: 1;
+    min-width: 200px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Section borders */
+.bordered {
+    border: 2px groove #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+/* Radio and option list styles */
+.radio-group label {
+    margin-right: 10px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.option-item label {
+    margin-right: 5px;
+}
+
+/* Button Styles */
+button {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .form-group {
+        flex-direction: column;
+    }
+}

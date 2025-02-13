@@ -111,7 +111,7 @@ export default function Home() {
         <div className="container">
             <h1>Surveys</h1>
             <div className="data-container">
-                <table border="1" cellPadding="5" style={{borderStyle: "unset"}}>
+                <table>
                     <thead>
                     <tr>
                         {columns.map((col, index) => (
@@ -127,13 +127,13 @@ export default function Home() {
                             <td>{row.userId}</td>
                             <td>{new Date(row.timestamp).toLocaleString()}</td>
                             <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
-                            <td>{(<button type="button" style={{marginLeft: '10px'}}
+                            <td>{(<button type="button"
                                           onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
                                 Answer({row.answerCount})
                             </button>)}
                             < /td>
-                            <td>{(<button type="button" onClick={() => handleDelete(`${row.surveyId}`)}
-                                          style={{marginLeft: '10px'}}>
+                            <td>{(<button type="button"
+                                          onClick={() => handleDelete(`${row.surveyId}`)}>
                                 Delete
                             </button>)}
                             < /td>
