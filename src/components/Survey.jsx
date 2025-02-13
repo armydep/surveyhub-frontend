@@ -319,11 +319,12 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div  className="form-section bordered">
+                        <div className="form-section bordered">
                             <div><strong>Answer (int)</strong></div>
                             <input disabled={!showAnswer}
                                    onChange={(event) => handleAnswerChange(index, event)}
                                    value={answer.value}
+                                   className="visible-spinners"
                                    type="number" name="quantity" min="1" max="1000" step="1"/>
                         </div>)
                 }
@@ -355,6 +356,7 @@ export default function Survey() {
                                             <input
                                                 disabled={showCtrls}
                                                 value={optitem}
+                                                type="text"
                                                 onChange={(event) => handleOptionItemTextChange(index, ind, event)}/>
                                             <button disabled={showCtrls} type="button"
                                                     style={{marginLeft: "10px"}}
@@ -378,28 +380,30 @@ export default function Survey() {
                     (
                         <div className="form-section">
                             <div><strong>Answer (optlist)</strong></div>
-                            {questions[index].options.map((opt, ind) => {
-                                const isChecked = (answer.value === (value.options.indexOf(opt)));
-                                console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
-                                return (
-                                    <label key={ind}>
-                                        <input
-                                            type="radio"
-                                            name={`options-${index}-${ind}`}
-                                            value={opt}
-                                            checked={isChecked}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    handleAnswerChange(index, {target: {value: ind}});
-                                                } else {
-                                                    //handleAnswerChange(index, {target: {value: ind}});
-                                                }
-                                            }}
-                                        />
-                                        {opt}
-                                    </label>
-                                )
-                            })}
+                            <div className="radio-group">
+                                {questions[index].options.map((opt, ind) => {
+                                    const isChecked = (answer.value === (value.options.indexOf(opt)));
+                                    console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
+                                    return (
+                                        <label key={ind}>
+                                            <input
+                                                type="radio"
+                                                name={`options-${index}-${ind}`}
+                                                value={opt}
+                                                checked={isChecked}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        handleAnswerChange(index, {target: {value: ind}});
+                                                    } else {
+                                                        //handleAnswerChange(index, {target: {value: ind}});
+                                                    }
+                                                }}
+                                            />
+                                            {opt}
+                                        </label>
+                                    )
+                                })}
+                            </div>
                         </div>
                     )
                 }
