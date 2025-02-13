@@ -595,7 +595,7 @@ export default function Survey() {
             case 'create':
                 return <button type="submit" disabled={!isFormValid()}>Create Survey</button>;
             case 'view':
-                return <div>View Mode</div>;
+                return <div></div>;
             case 'answer':
                 return <button onClick={submitSurveyAnswers}
                                type="button" disabled={!isAnswersValid()}>Submit Answers</button>;
@@ -606,30 +606,30 @@ export default function Survey() {
 
     return (<div className="container">
             <h1>Survey ({mode})</h1>
-            {!survey ?
-                (<div>
-                    <div>
+            {!survey &&
+                (<div className="data-container" style={{display: "flex", gap: "10px"}}>
+                    <div className="data-item">
                         <button type="button" onClick={addTextQuestion}>Add Text Question</button>
                     </div>
-                    <div>
+                    <div className="data-item">
                         <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
                     </div>
-                    <div>
+                    <div className="data-item">
                         <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
                     </div>
-                    <div>
+                    <div className="data-item">
                         <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
                     </div>
-                </div>) : (<div>not show</div>)
+                </div>)
             }
             {
-                survey ?
-                    (<div className="survey-info">
-                            <p><strong>Survey ID:</strong>{survey.surveyId}</p>
-                            <p><strong>User ID:</strong>{survey.userId}</p>
-                            <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
-                        </div>
-                    ) : (<div>new survey</div>)
+                survey &&
+                (<div className="survey-info">
+                        <p><strong>Survey ID:</strong>{survey.surveyId}</p>
+                        <p><strong>User ID:</strong>{survey.userId}</p>
+                        <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
+                    </div>
+                )
             }
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
