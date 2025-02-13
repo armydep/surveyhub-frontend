@@ -103,3 +103,9 @@ button:hover {
         font-size: 0.9rem;
     }
 }
+
+/* Ensure spinner buttons are always visible */
+.visible-spinners::-webkit-inner-spin-button,
+.visible-spinners::-webkit-outer-spin-button {
+    opacity: 1; /* Make the buttons always visible */
+}

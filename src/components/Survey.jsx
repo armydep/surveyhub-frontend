@@ -187,16 +187,19 @@ export default function Survey() {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
             <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+
                 <div style={{borderStyle: "groove"}}>
-                            <textarea value={q.question}
-                                      disabled={showCtrls}
-                                      placeholder="Type a question (txt)"
-                                      onChange={(event) => handleTextQuestionChange(index, event)}/>
+                    <div>question (text)</div>
+                    <textarea value={q.question}
+                              disabled={showCtrls}
+                              placeholder="Type a question (txt)"
+                              onChange={(event) => handleTextQuestionChange(index, event)}/>
                     <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                         <div>
                             <label htmlFor="quantity">Min size:</label>
                             <input
                                 disabled={showCtrls}
+                                className="visible-spinners"
                                 onChange={(event) => handleTextMinSizeChange(index, event)}
                                 type="number" name="quantity" min="1" value={q.min}
                                 max="100" step="1"/>
@@ -204,6 +207,7 @@ export default function Survey() {
                         <div>
                             <label htmlFor="quantity">Max:</label>
                             <input disabled={showCtrls}
+                                   className="visible-spinners"
                                    onChange={(event) => handleTextMaxSizeChange(index, event)}
                                    type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
                         </div>
@@ -219,11 +223,12 @@ export default function Survey() {
                     showAnswer &&
                     (<div
                         style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
-                                                <textarea
-                                                    disabled={!showAnswer}
-                                                    value={answer.value} placeholder="Type an answer (txt)"
-                                                    onChange={(event) => handleAnswerChange(index, event)}
-                                                />
+                        <div>answer (text)</div>
+                        <textarea
+                            disabled={!showAnswer}
+                            value={answer.value} placeholder="Type an answer (txt)"
+                            onChange={(event) => handleAnswerChange(index, event)}
+                        />
                     </div>)
                 }
             </div>
@@ -234,10 +239,11 @@ export default function Survey() {
         return (
             <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
                 <div style={{borderStyle: "groove"}}>
-                            <textarea disabled={showCtrls}
-                                      value={qst.question} placeholder="Type a question (bool)"
-                                      onChange={(event) => handleBooleanQuestionChange(index, event)}
-                            />
+                    <div>question (bool)</div>
+                    <textarea disabled={showCtrls}
+                              value={qst.question} placeholder="Type a question (bool)"
+                              onChange={(event) => handleBooleanQuestionChange(index, event)}
+                    />
                     <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                         {
                             !showCtrls &&
@@ -249,8 +255,8 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div
-                            style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                        <div style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                            <div>answer (bool)</div>
                             <label key={'b1'}>
                                 <input
                                     type="radio"
@@ -284,21 +290,26 @@ export default function Survey() {
         return (
             <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
                 <div style={{borderStyle: "groove"}}>
-                            <textarea value={value.question}
-                                      disabled={showCtrls}
-                                      placeholder="Type a question (int)"
-                                      onChange={(event) => handleIntegerQuestionChange(index, event)}/>
+                    <div>question (int)</div>
+                    <textarea value={value.question}
+                              disabled={showCtrls}
+                              placeholder="Type a question (int)"
+                              onChange={(event) => handleIntegerQuestionChange(index, event)}/>
                     <div style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
                         <div>
                             <label htmlFor="quantity">Min:</label>
                             <input
                                 disabled={showCtrls}
                                 value={value.min}
+                                type="number"
+                                className="visible-spinners"
                                 onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
                         </div>
                         <div>
                             <label htmlFor="quantity">Max:</label>
                             <input disabled={showCtrls} value={value.max}
+                                   type="number"
+                                   className="visible-spinners"
                                    onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
                         </div>
                     </div>
@@ -311,8 +322,8 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div
-                            style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                        <div style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
+                            <div>answer (int)</div>
                             <input disabled={!showAnswer}
                                    onChange={(event) => handleAnswerChange(index, event)}
                                    value={answer.value}
@@ -328,10 +339,11 @@ export default function Survey() {
         return (
             <div key={index} style={{display: "flex", gap: "10px", marginBottom: "20px", borderStyle: "groove"}}>
                 <div style={{borderStyle: "groove"}}>
-                            <textarea
-                                disabled={showCtrls}
-                                value={value.question} placeholder="Type a question (optlist)"
-                                onChange={(event) => handleOptionListQuestionChange(index, event)}/>
+                    <div>question (optlist)</div>
+                    <textarea
+                        disabled={showCtrls}
+                        value={value.question} placeholder="Type a question (optlist)"
+                        onChange={(event) => handleOptionListQuestionChange(index, event)}/>
                     <div style={{marginTop: '10px', marginBottom: '10px', borderStyle: "ridge"}}>
                         <label>Options</label>
                         <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
@@ -368,28 +380,31 @@ export default function Survey() {
                 {
                     showAnswer &&
                     (
-                        questions[index].options.map((opt, ind) => {
-                            const isChecked = (answer.value === (value.options.indexOf(opt)));
-                            console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
-                            return (
-                                <label key={ind}>
-                                    <input
-                                        type="radio"
-                                        name={`options-${index}-${ind}`}
-                                        value={opt}
-                                        checked={isChecked}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                handleAnswerChange(index, {target: {value: ind}});
-                                            } else {
-                                                //handleAnswerChange(index, {target: {value: ind}});
-                                            }
-                                        }}
-                                    />
-                                    {opt}
-                                </label>
-                            )
-                        })
+                        <div>
+                            <div>answer (optlist)</div>
+                            {questions[index].options.map((opt, ind) => {
+                                const isChecked = (answer.value === (value.options.indexOf(opt)));
+                                console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
+                                return (
+                                    <label key={ind}>
+                                        <input
+                                            type="radio"
+                                            name={`options-${index}-${ind}`}
+                                            value={opt}
+                                            checked={isChecked}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    handleAnswerChange(index, {target: {value: ind}});
+                                                } else {
+                                                    //handleAnswerChange(index, {target: {value: ind}});
+                                                }
+                                            }}
+                                        />
+                                        {opt}
+                                    </label>
+                                )
+                            })}
+                        </div>
                     )
                 }
 
@@ -462,7 +477,7 @@ export default function Survey() {
     }
 
     function isValidOptionListAnswer(answer, index) {
-        const isValid = (isNonEmptyInteger(answer.value) && answer.value >=0 && answer.value < questions[index].options.length);
+        const isValid = (isNonEmptyInteger(answer.value) && answer.value >= 0 && answer.value < questions[index].options.length);
         console.log("isValid opt list answer: " + isValid + ". " + JSON.stringify(answer) + ". index: " + index);
         return isValid;
     }
