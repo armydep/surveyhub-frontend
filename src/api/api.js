@@ -55,3 +55,9 @@ export const submitAnswers = async (answerForm) => {
         body: JSON.stringify(answerForm),
     }, "text");
 };
+
+export const fetchAnswerById = async (answerId) => {
+    return surveyApiRequest(`/api/answer/${answerId}`, {
+        method: 'GET',
+    }, "json");
+};
