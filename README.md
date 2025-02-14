@@ -20,7 +20,7 @@ npm run build
 run:
 npm run dev
 
-nginx:
+# Nginx config:
 -------
 `
 
@@ -59,3 +59,13 @@ nginx:
 
 `
 ------
+# Pages:
+- home 
+- dashboard
+- surveys
+- users
+- statistics
+  - total numbers: surveys, answers, users
+  - survey answers grouping:
+- survey answers
+- single answer
