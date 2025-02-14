@@ -15,6 +15,7 @@ export default function Layout() {
                         <li><a href="/">Statistics</a></li>
                         <li><a href="/">Admin</a></li>
                         <li><a href="/">Settings</a></li>
+                        <li><a href="/">Login</a></li>
                         <li><a href="/about">About</a></li>
                         <li><a href="/contact">Contact</a></li>
                     </ul>
