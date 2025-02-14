@@ -63,6 +63,8 @@ npm run dev
 - home 
 - dashboard
 - surveys
+  - all
+  - top N by rating
 - users
 - statistics
   - total numbers: surveys, answers, users

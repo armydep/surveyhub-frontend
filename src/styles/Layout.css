@@ -1,0 +1,67 @@
+/* Reset default list styles */
+nav ul {
+    list-style-type: none; /* Remove bullets */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Make the list items horizontal */
+    gap: 20px; /* Add space between items */
+}
+
+/* Style the list items */
+nav ul li {
+    display: inline-block; /* Ensure items are inline */
+}
+
+/* Style the links */
+nav ul li a {
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Default link color */
+    font-weight: bold;
+    padding: 10px 15px; /* Add padding for better clickability */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Smooth hover effect */
+}
+
+/* Hover effect for links */
+nav ul li a:hover {
+    background-color: #007bff; /* Change background on hover */
+    color: #fff; /* Change text color on hover */
+}
+
+/* Header styling */
+header {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Main content styling */
+main {
+    padding: 20px;
+    min-height: 80vh; /* Ensure the main content takes up most of the page */
+}
+
+/* Footer styling */
+footer {
+    background-color: #f8f9fa;
+    /*background-color: #333; !* Dark background *!*/
+    /*color: #fff; !* White text *!*/
+    padding: 20px; /* Add padding */
+    text-align: center; /* Center-align text */
+    /*border-top: 1px solid #444; /* Add a subtle border at the top */
+    border-top: 1px solid #ddd;
+}
+
+/* Responsive design: Stack navigation items vertically on small screens */
+@media (max-width: 600px) {
+    nav ul {
+        flex-direction: column; /* Stack items vertically */
+        gap: 10px; /* Reduce gap between items */
+    }
+
+    nav ul li a {
+        display: block; /* Make links full width */
+        text-align: center; /* Center-align text */
+    }
+}
