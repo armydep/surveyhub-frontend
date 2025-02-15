@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useParams} from "react-router-dom";
 import {fetchSurveyById, submitAnswers, submitSurvey} from "../api/api.js";
-import '../styles/Survey.css'
+import styles from "../styles/Survey.module.css";
 
 export default function Survey() {
     const {surveyId} = useParams();
@@ -186,19 +186,19 @@ export default function Survey() {
     function TextQuestionComponent(index, q, showCtrls, showAnswer, answer) {
         console.debug(`Text component added. index: ${index}. value: ${q}`);
         return (
-            <div key={index} className="form-group bordered">
-                <div className="form-section">
+            <div key={index} className={`${styles.formGroup} ${styles.bordered}`}>
+                <div className={styles.formSection}>
                     <div><strong>Question (text)</strong></div>
                     <textarea value={q.question}
                               disabled={showCtrls}
                               placeholder="Type a question (txt)"
                               onChange={(event) => handleTextQuestionChange(index, event)}/>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <div>
                             <label htmlFor="quantity">Min size:</label>
                             <input
                                 disabled={showCtrls}
-                                className="visible-spinners"
+                                className={styles.visibleSpinners}
                                 onChange={(event) => handleTextMinSizeChange(index, event)}
                                 type="number" name="quantity" min="1" value={q.min}
                                 max="100" step="1"/>
@@ -206,7 +206,7 @@ export default function Survey() {
                         <div>
                             <label htmlFor="quantity">Max:</label>
                             <input disabled={showCtrls}
-                                   className="visible-spinners"
+                                   className={styles.visibleSpinners}
                                    onChange={(event) => handleTextMaxSizeChange(index, event)}
                                    type="number" name="quantity" min="1" max="1000" step="1" value={q.max}/>
                         </div>
@@ -220,7 +220,7 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer &&
-                    (<div className="form-section bordered">
+                    (<div className={`${styles.formGroup} ${styles.bordered}`}>
                         <div><strong>Answer (text)</strong></div>
                         <textarea
                             disabled={!showAnswer}
@@ -235,8 +235,8 @@ export default function Survey() {
 
     function BooleanQuestionComponent(index, qst, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} className="form-group bordered">
-                <div className="form-section">
+            <div key={index} className={`${styles.formGroup} ${styles.bordered}`}>
+                <div className={styles.formSection}>
                     <div><strong>Question (bool)</strong></div>
                     <textarea disabled={showCtrls}
                               onChange={(event) => handleBooleanQuestionChange(index, event)}
@@ -252,9 +252,9 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div className="form-section bordered">
+                        <div className={`${styles.formGroup} ${styles.bordered}`}>
                             <div><strong>Answer (bool)</strong></div>
-                            <div className="radio-group">
+                            <div className={styles.radioGroup}>
                                 <label key={'b1'}>
                                     <input
                                         type="radio"
@@ -285,28 +285,28 @@ export default function Survey() {
 
     function IntegerQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} className="form-group bordered">
-                <div className="form-section">
+            <div key={index} className={`${styles.formGroup} ${styles.bordered}`}>
+                <div className={styles.formSection}>
                     <div><strong>Question (int)</strong></div>
                     <textarea value={value.question}
                               disabled={showCtrls}
                               placeholder="Type a question (int)"
                               onChange={(event) => handleIntegerQuestionChange(index, event)}/>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <div>
                             <label htmlFor="quantity">Min:</label>
                             <input
                                 disabled={showCtrls}
                                 value={value.min}
                                 type="number"
-                                className="visible-spinners"
+                                className={styles.visibleSpinners}
                                 onChange={(event) => handleIntegerMinSizeChange(index, event)}/>
                         </div>
                         <div>
                             <label htmlFor="quantity">Max:</label>
                             <input disabled={showCtrls} value={value.max}
                                    type="number"
-                                   className="visible-spinners"
+                                   className={styles.visibleSpinners}
                                    onChange={(event) => handleIntegerMaxSizeChange(index, event)}/>
                         </div>
                     </div>
@@ -319,12 +319,12 @@ export default function Survey() {
                 </div>
                 {
                     showAnswer && (
-                        <div className="form-section bordered">
+                        <div className={`${styles.formGroup} ${styles.bordered}`}>
                             <div><strong>Answer (int)</strong></div>
                             <input disabled={!showAnswer}
                                    onChange={(event) => handleAnswerChange(index, event)}
                                    value={answer.value}
-                                   className="visible-spinners"
+                                   className={styles.visibleSpinners}
                                    type="number" name="quantity" min="1" max="1000" step="1"/>
                         </div>)
                 }
@@ -335,23 +335,23 @@ export default function Survey() {
 
     function OptionListQuestionComponent(index, value, showCtrls, showAnswer, answer) {
         return (
-            <div key={index} className="form-group bordered">
-                <div className="form-section">
+            <div key={index} className={`${styles.formGroup} ${styles.bordered}`}>
+                <div className={styles.formSection}>
                     <div><strong>Question (optlist)</strong></div>
                     <textarea
                         disabled={showCtrls}
                         value={value.question} placeholder="Type a question (optlist)"
                         onChange={(event) => handleOptionListQuestionChange(index, event)}/>
-                    <div className="bordered" style={{marginTop: "10px", marginBottom: "10px", padding: "10px"}}>
+                    <div className={styles.bordered} style={{marginTop: "10px", marginBottom: "10px", padding: "10px"}}>
                         <label>Options</label>
                         <button type="button" disabled={showCtrls} onClick={() => addOptionItem(index)}>Add Option item
                         </button>
-                        <div className="option-list">
+                        <div className={styles.optionList}>
                             {
                                 questions[index].options.map((optitem, ind) => {
                                     console.debug("Option item: " + optitem + ". index: " + ind);
                                     return (
-                                        <div key={ind} className="option-item">
+                                        <div key={ind} className={styles.optionItem}>
                                             <label>{ind}:</label>
                                             <input
                                                 disabled={showCtrls}
@@ -378,9 +378,9 @@ export default function Survey() {
                 {
                     showAnswer &&
                     (
-                        <div className="form-section">
+                        <div className={styles.formSection}>
                             <div><strong>Answer (optlist)</strong></div>
-                            <div className="radio-group">
+                            <div className={styles.radioGroup}>
                                 {questions[index].options.map((opt, ind) => {
                                     const isChecked = (answer.value === (value.options.indexOf(opt)));
                                     console.log("Opt list items: " + opt + ". isChecked:" + isChecked + ". qst: " + JSON.stringify(value));
@@ -604,27 +604,27 @@ export default function Survey() {
         }
     };
 
-    return (<div className="container">
+    return (<div className={styles.container}>
             <h1>Survey ({mode})</h1>
             {!survey &&
-                (<div className="data-container" style={{display: "flex", gap: "10px"}}>
-                    <div className="data-item">
+                (<div className={styles.dataContainer} style={{display: "flex", gap: "10px"}}>
+                    <div className={styles.dataItem}>
                         <button type="button" onClick={addTextQuestion}>Add Text Question</button>
                     </div>
-                    <div className="data-item">
+                    <div className={styles.dataItem}>
                         <button type="button" onClick={addBoolQuestion}>Add Bool Question</button>
                     </div>
-                    <div className="data-item">
+                    <div className={styles.dataItem}>
                         <button type="button" onClick={addIntegerQuestion}>Add Integer Question</button>
                     </div>
-                    <div className="data-item">
+                    <div className={styles.dataItem}>
                         <button type="button" onClick={addOptionListQuestion}>Add OptionList Question</button>
                     </div>
                 </div>)
             }
             {
                 survey &&
-                (<div className="survey-info">
+                (<div className={styles.surveyInfo}>
                         <p><strong>Survey ID:</strong>{survey.surveyId}</p>
                         <p><strong>User ID:</strong>{survey.userId}</p>
                         <p><strong>Created:</strong>{new Date(survey.timestamp).toLocaleString()}</p>
@@ -632,7 +632,7 @@ export default function Survey() {
                 )
             }
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <div>
                         <label>Name:</label>
                         <input type="text" value={name}

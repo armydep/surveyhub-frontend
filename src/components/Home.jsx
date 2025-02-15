@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
-import {BACKEND_WS_URL} from '../config.js'
-import '../styles/Home.css'
+import {BACKEND_WS_URL} from '../config.js';
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
     const [surveys, setSurveys] = useState([]);
@@ -108,20 +108,20 @@ export default function Home() {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="container">
+        <div className={styles.container}>
             <h1>Surveys</h1>
-            <div className="data-container">
+            <div className={styles.dataContainer}>
                 <table>
                     <thead>
                     <tr>
                         {columns.map((col, index) => (
-                            <th key={index} className="data-item">{col.toUpperCase()}</th>
+                            <th key={index} className={styles.dataItem}>{col.toUpperCase()}</th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
                     {surveys.map((row, rowInd) => (
-                        <tr key={row.surveyId} className="data-item">
+                        <tr key={row.surveyId} className={styles.dataItem}>
                             <td>{rowInd}</td>
                             <td>{row.name}</td>
                             <td>{row.userId}</td>

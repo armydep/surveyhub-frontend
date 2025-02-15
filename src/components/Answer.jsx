@@ -1,8 +1,5 @@
-// import {useEffect, useRef, useState} from 'react';
-// import {Link, useNavigate} from 'react-router-dom';
 import {fetchAnswerById} from '../api/api.js';
-// import {BACKEND_WS_URL} from '../config.js'
-// import '../styles/Home.css'
+import styles from '../styles/Answer.module.css'
 
 import {useParams} from "react-router-dom";
 import {useState, useEffect} from "react";
@@ -32,9 +29,9 @@ export default function Answer() {
     }, []);
 
     return (
-        <div className="container">
+        <div className={styles.container}>
             <h1>Answer</h1>
-            <div className="data-container">
+            <div className={styles.dataContainer}>
                 <textarea disabled rows={20} value={JSON.stringify(answerData, null, 2)}/>
             </div>
             {error && (<div style={{color: 'red'}}>
