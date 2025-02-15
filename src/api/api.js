@@ -23,6 +23,12 @@ export const listSurveys = async () => {
     }, "json");
 };
 
+export const fetchSurveyAnswers = async (surveyId) => {
+    return surveyApiRequest(`/api/survey/${surveyId}/answers`, {
+        method: "GET"
+    }, "json");
+};
+
 export const deleteSurvey = async (surveyId) => {
     return surveyApiRequest(`/api/survey/${surveyId}`, {
         method: "POST"
