@@ -53,9 +53,9 @@ export default function SurveyAnswers() {
                             <td>{rowInd}</td>
                             <td>{row.formId}</td>
                             <td>{row.userId}</td>
-                            <td>{new Date(row.timestamp).toLocaleString()}</td>
-                            <td>{new Date(row.timestamp).toLocaleString()}</td>
-                            <td>{new Date(row.timestamp).toLocaleString()}</td>
+                            <td>{new Date(row.createdAt).toLocaleString()}</td>
+                            <td>{new Date(row.createdAt).toLocaleString()}</td>
+                            <td>{new Date(row.createdAt).toLocaleString()}</td>
                             {/*<td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
                             <td>{(<button type="button"
                                           onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
