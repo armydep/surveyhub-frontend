@@ -51,18 +51,16 @@ npm run dev
 
 `
 ------
-# nginx setup
-`
+# Nginx Setup
 
+```bash
 sudo nginx -t
 sudo systemctl status nginx.service
 sudo journalctl -xeu nginx.service
 sudo setfacl -m g:www-data:rwx dist
 sudo chown -R www-data:www-data dist
 sudo ln -sf /etc/nginx/sites-available/front-survey-hub-nginx-conf /etc/nginx/sites-enabled/front-survey-hub-nginx-symln
-
-
-`
+```
 
 # Pages:
 - home 
