@@ -25,40 +25,45 @@ npm run dev
 `
 
     server {
-      listen 80;  
-      server_name raspub 192.168.1.102;                                                                                                                                                                                                               root /home/enruxer/gen-frontend/dist;              
-      index index.html;
-  
-      location / {
-              try_files $uri $uri/ /index.html;
-      }
-  
-      error_page 404 /index.html;
-  
-      location /api {
-          proxy_pass http://localhost:8080/api;
-          #add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
-          #add_header Access-Control-Allow-Headers "Authorization, Content-Type";
-          #add_header Access-Control-Allow-Origin *;
-          #if ($request_method = OPTIONS) {
-                  #add_header Allow "POST, OPTIONS, PUT, DELETE, GET";
-              #add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept";
-              #add_header Access-Control-Allow-Origin "*";
-              #return 200;
-              #   }
-      }
-  
-      location /ws/api {
-          proxy_pass http://localhost:8080/ws/api;
-          proxy_http_version 1.1;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "Upgrade";
-          proxy_set_header Host $host;
-      }
-   }  
+            listen 80;
+            server_name raspub 192.168.1.102;
+            root /home/enruxer/projects/front-survey-hub/dist;
+            index index.html;
+    
+            location / {
+                    try_files $uri $uri/ /index.html;
+            }
+    
+            error_page 404 /index.html;
+    
+            location /api {
+                    proxy_pass http://localhost:8080/api;
+            }
+    
+            location /ws/api {
+                    proxy_pass http://localhost:8080/ws/api;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "Upgrade";
+                    proxy_set_header Host $host;
+            }
+    }
 
 `
 ------
+# nginx setup
+`
+
+sudo nginx -t
+sudo systemctl status nginx.service
+sudo journalctl -xeu nginx.service
+sudo setfacl -m g:www-data:rwx dist
+sudo chown -R www-data:www-data dist
+sudo ln -sf /etc/nginx/sites-available/front-survey-hub-nginx-conf /etc/nginx/sites-enabled/front-survey-hub-nginx-symln
+
+
+`
+
 # Pages:
 - home 
 - dashboard
@@ -71,3 +76,4 @@ npm run dev
   - survey answers grouping:
 - survey answers
 - single answer
+- search service (elastic search)
