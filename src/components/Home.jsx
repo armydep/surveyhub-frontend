@@ -106,9 +106,23 @@ export default function Home() {
     };
 
     const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text)
-            .then(() => alert("Link copied!"))
-            .catch((err) => console.error("Failed to copy: ", err));
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert("Link copied(1)"))
+                .catch((err) => console.error("Failed to copy: ", err));
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand("copy");
+                alert("Link copied(2)");
+            } catch (err) {
+                console.error("Fallback copy failed", err);
+            }
+            document.body.removeChild(textArea);
+        }
     };
 
     if (loading) return <div>Loading...</div>;
