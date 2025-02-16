@@ -1,15 +1,16 @@
 import {useEffect, useRef, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, Route, useNavigate} from 'react-router-dom';
 import {deleteSurvey, listSurveys} from '../api/api.js';
 import {BACKEND_WS_URL} from '../config.js';
 import styles from '../styles/Home.module.css';
+import SurveyAnswers from "./SurveyAnswers.jsx";
 
 export default function Home() {
     const [surveys, setSurveys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const columns = ["#", "name", "user", "created", "view", "answer", "delete"];
+    const columns = ["#", "name", "user", "created", "questions", "answers", "fill", "delete"];
     const socketRef = useRef(null);
 
     useEffect(() => {
@@ -126,11 +127,22 @@ export default function Home() {
                             <td>{row.name}</td>
                             <td>{row.userId}</td>
                             <td>{new Date(row.timestamp).toLocaleString()}</td>
-                            <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View</Link>)}< /td>
-                            <td>{(<button type="button"
-                                          onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
-                                Answer({row.answerCount})
-                            </button>)}
+                            <td>{(<Link to={`/survey/${row.surveyId}`} state={{tmpSrvFromHome: row}}>View
+                                Form</Link>)}< /td>
+                            <td>{row.answerCount < 1 ? (<span>View Answers ({row.answerCount})</span>) :
+                                (<Link to={`/answer/survey/${row.surveyId}`}>View Answers ({row.answerCount})</Link>)}
+                            </td>
+                            <td>
+                                {
+                                    (
+                                        <div>
+                                            <button type="button"
+                                                    onClick={() => navigate(`/survey/answer/${row.surveyId}`, {state: {tmpSrvFromHome: row}})}>
+                                                Answer
+                                            </button>
+                                        </div>
+                                    )
+                                }
                             < /td>
                             <td>{(<button type="button"
                                           onClick={() => handleDelete(`${row.surveyId}`)}>
