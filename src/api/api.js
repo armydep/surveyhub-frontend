@@ -2,7 +2,7 @@ import {BACKEND_API_URL} from '../config.js'
 
 const surveyApiRequest = async (url, options = {}, resp = "text") => {
     try {
-        const response = await fetch(BACKEND_API_URL + url, options);
+        const response = await fetch(`${BACKEND_API_URL}${url}`, options);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
