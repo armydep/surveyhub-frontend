@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import styles from './WalletStyles.jsx';
+import styles from './WalletLoginStyles.jsx';
 import {signInWallet} from "./wallet_api.jsx";
 
 export default function WalletLogin() {
@@ -18,6 +18,7 @@ export default function WalletLogin() {
             localStorage.setItem('jwtToken', JSON.stringify(data));
             navigate('/wallet/home');
         } catch (error) {
+            localStorage.setItem('jwtToken', null);
             //setError('Failed to fetch data: ' + error);
             console.error('Error:', error);
         }

@@ -8,8 +8,7 @@ export default function WalletHome() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                //const result = await fetchWithAuth('/wallet/api/user/user');
-                const result = await fetchWithAuth('/wallet/api/operation/balance');
+                const result = await fetchWithAuth();
                 setData(result);
             } catch (error) {
                 setError('Failed to fetch data: ' + error);

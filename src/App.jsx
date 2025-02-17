@@ -5,6 +5,7 @@ import Answer from "./components/Answer.jsx";
 import SurveyAnswers from "./components/SurveyAnswers.jsx";
 import Layout from "./components/Layout.jsx"
 import WalletLogin from "./components/wallet/WalletLogin.jsx"
+import WalletSignUp from "./components/wallet/WalletSignUp.jsx";
 import WalletHome from "./components/wallet/WalletHome.jsx";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
                         <Route exact path="/survey/:surveyId" element={<Survey/>}/>
                         <Route exact path="/answer/:answerId" element={<Answer/>}/>
                         <Route exact path="/answer/survey/:surveyId" element={<SurveyAnswers/>}/>
+                        <Route exact path="/wallet/signup" element={<WalletSignUp/>}/>
                         <Route exact path="/wallet/login" element={<WalletLogin/>}/>
                         <Route exact path="/wallet/home" element={<WalletHome/>}/>
                     </Route>
