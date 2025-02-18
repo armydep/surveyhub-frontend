@@ -54,3 +54,22 @@ export async function fetchWithAuth() {
 
     return response.json();
 }
+
+export async function sendMoney(sender, recipient, btc, sat) {
+    const jwtStr = localStorage.getItem('jwtToken');
+    const jwt = JSON.parse(jwtStr);
+    const headers = {
+        'Authorization': `Bearer ${jwt.token}`,
+        'Content-Type': 'application/json'
+    };
+    const body = JSON.stringify({sender: sender, recipient: recipient, btc: btc, sat: sat});
+    const url = '/wallet/api/operation/send';
+    const response = await fetch(`${WALLET_BACKEND_URL}${url}`, {
+        method: "POST", headers: headers, body: body
+    });
+    if (!response.ok) {
+        throw new Error('Request failed');
+    }
+
+    return response.json();
+}

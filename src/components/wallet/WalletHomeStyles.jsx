@@ -2,7 +2,7 @@ const styles = {
     dashboard: {
         padding: '20px',
         fontFamily: 'Arial, sans-serif',
-        maxWidth: '400px',
+        maxWidth: '600px',
 //        margin: '0 auto',
         textAlign: 'center',
         border: '1px solid #ccc',

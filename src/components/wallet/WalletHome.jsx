@@ -1,12 +1,14 @@
-import {useEffect, useRef, useState} from 'react';
-import {fetchWithAuth} from './wallet_api.jsx';
+import {useEffect, useState} from 'react';
+import {fetchWithAuth, sendMoney} from './wallet_api.jsx';
 import styles from "./WalletHomeStyles.jsx";
 
 export default function WalletHome() {
     const [balanceData, setBalanceData] = useState(null);
-    const [amount, setAmount] = useState(null);
+    const [currentBalance, setCurrentBalance] = useState(null);
+    const [userAddress, setUserAddress] = useState('');
+    const [amountToSend, setAmountToSend] = useState('');
     const [error, setError] = useState(null);
-    const [targetAddress, setTargetAddress] = useState(null);
+    const [targetAddress, setTargetAddress] = useState('');
     //const signState = useRef({signedIn: false});
 
     useEffect(() => {
@@ -14,7 +16,8 @@ export default function WalletHome() {
             try {
                 const result = await fetchWithAuth();
                 console.debug("Balance data amount: ", result.amount);
-                setAmount(result.amount);
+                setCurrentBalance(result.amount);
+                setUserAddress(result.address);
                 setBalanceData(result);
             } catch (error) {
                 setError('Failed to fetch data: ' + error);
@@ -32,31 +35,50 @@ export default function WalletHome() {
         }
     }, []);
 
-    const handleSendMoney = () => {
-        // if (!amount || !targetAddress) {
-        //     alert('Please fill in both amount and target address.');
-        //     return;
-        // }
-        //
-        // const amountNumber = parseFloat(amount);
-        // if (isNaN(amountNumber) || amountNumber <= 0) {
-        //     alert('Please enter a valid amount.');
-        //     return;
-        // }
-        //
-        // if (amountNumber > balance) {
-        //     alert('Insufficient balance.');
-        //     return;
-        // }
-        //
-        // // Simulate sending money (update balance)
-        // setBalance((prevBalance) => prevBalance - amountNumber);
-        // alert(`Sent ${amountNumber} to ${targetAddress}`);
-        //
-        // // Reset input fields
-        // setAmount('');
-        // setTargetAddress('');
+    const handleSendMoney = async () => {
+        if (!amountToSend || !targetAddress) {
+            alert('Please fill in both amount and target address.');
+            return;
+        }
+        const amountNumber = parseFloat(amountToSend);
+        if (isNaN(amountNumber) || amountNumber <= 0) {
+            alert('Please enter a valid amount.');
+            return;
+        }
+
+        if (amountToSend > currentBalance) {
+            alert('Insufficient balance.');
+            return;
+        }
+        const {btc, sat} = splitNumber(parseFloat(amountToSend));
+        try {
+            console.debug("Amount to send btc: " + btc + ". sat: " + sat);
+            const confirmTransfer = window.confirm("Amount to transfer. btc: " + btc + " sat:" + sat);
+            if (confirmTransfer) {
+                sendMoney(userAddress, targetAddress, btc, sat);
+                //setCurrentBalance(result.amount);
+                //setUserAddress(result.address);
+                //setBalanceData(result);
+            }
+        } catch (error) {
+            setError('Failed to send: ' + error);
+            console.error('Error:', error);
+        }
     };
+
+    function splitNumber(num) {
+        if (typeof num !== 'number' || isNaN(num)) {
+            throw new Error('Input must be a valid number');
+        }
+        let integerPart = Math.floor(num);
+        let floatingPartStr = (num - integerPart).toFixed(9).split('.')[1];
+        floatingPartStr = floatingPartStr.replace(/0+$/, '');
+        let floatingPart = parseInt(floatingPartStr === '' ? '0' : floatingPartStr);
+        return {
+            btc: integerPart,
+            sat: floatingPart
+        };
+    }
 
     return (error ? (<p style={{color: 'red'}}>{error}</p>) :
             <div>
@@ -65,27 +87,36 @@ export default function WalletHome() {
 
                     {/* Balance Section */}
                     <div style={styles.balanceSection}>
+                        <label style={styles.label}>Address:</label>
+                        <span style={styles.balanceAmount}>{userAddress}</span>
+                    </div>
+                    <div style={styles.balanceSection}>
                         <label style={styles.label}>Balance:</label>
-                        <span style={styles.balanceAmount}>{amount} BTC</span>
+                        <span style={styles.balanceAmount}>{currentBalance} BTC</span>
                     </div>
 
                     {/* Send Money Section */}
                     <div style={styles.sendMoneySection}>
                         <input
-                            type="text"
+                            type="number"
                             placeholder="Amount"
-                            value=""
-                            onChange={(e) => setAmount(e.target.value)}
+                            value={amountToSend}
+                            onChange={(e) => {
+                                    if (e.target.value <= currentBalance && e.target.value > 0) {
+                                        setAmountToSend(e.target.value)
+                                    }
+                                }
+                            }
                             style={styles.input}
                         />
                         <input
                             type="text"
                             placeholder="Target Address"
-                            value=""
+                            value={targetAddress}
                             onChange={(e) => setTargetAddress(e.target.value)}
                             style={styles.input}
                         />
-                        <button onClick={handleSendMoney} style={styles.button}>
+                        <button onClick={handleSendMoney} type="submit" style={styles.button} disabled={false}>
                             Send Money
                         </button>
                     </div>
