@@ -75,3 +75,9 @@ sudo ln -sf /etc/nginx/sites-available/front-survey-hub-nginx-conf /etc/nginx/si
 - survey answers
 - single answer
 - search service (elastic search)
+
+# Docker 
+- sudo docker build . -t amdocker100/survey-hub-frontend:1.0
+- sudo docker login -u amdocker100
+- sudo docker push amdocker100/survey-hub-frontend:1.0
+- 
